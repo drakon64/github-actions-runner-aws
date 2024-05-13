@@ -1,0 +1,37 @@
+# $schema: https://raw.githubusercontent.com/ansible/ansible-lint/main/src/ansiblelint/schemas/ansible.json
+
+- hosts: 127.0.0.1
+  connection: local
+  become: true
+  tasks:
+  - ansible.builtin.user:
+      create_home: yes
+      groups: wheel
+      name: runner
+
+  - ansible.builtin.file:
+      group: runner
+      mode: 0700
+      owner: runner
+      path: /home/runner/actions-runner
+      state: directory
+
+  # TODO: Avoid hard-coding version
+  # TODO: Checksum
+  - ansible.builtin.unarchive:
+      dest: /home/runner/actions-runner
+      group: runner
+      owner: runner
+      remote_src: yes
+      src: https://github.com/actions/runner/releases/download/v2.316.1/actions-runner-linux-arm64-2.316.1.tar.gz
+
+  - ansible.builtin.command: ./config.sh --url {{ var.url }} --token {{ var.token }} --ephemeral
+    args:
+      chdir: /home/runner/actions-runner
+    become_user: runner
+
+  # TODO: Run as a oneshot service
+  - ansible.builtin.shell: ./run.sh &
+    args:
+      chdir: /home/runner/actions-runner
+    become_user: runner
