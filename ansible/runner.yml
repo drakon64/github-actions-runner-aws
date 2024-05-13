@@ -25,7 +25,7 @@
       remote_src: yes
       src: https://github.com/actions/runner/releases/download/v2.316.1/actions-runner-linux-arm64-2.316.1.tar.gz
 
-  - ansible.builtin.command: ./config.sh --url {{ var.url }} --token {{ var.token }} --ephemeral
+  - ansible.builtin.command: ./config.sh --url {{ url }} --token {{ token }} --ephemeral
     args:
       chdir: /home/runner/actions-runner
     become_user: runner
