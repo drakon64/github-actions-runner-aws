@@ -5,6 +5,7 @@ edition = "2021"
 
 [dependencies]
 aws-config = { version = "1", default-features = false }
+aws_lambda_events = { version = "0", default-features = false, features = ["apigw"] }
 aws-sdk-ec2 = { version =  "1", default-features = false }
 lambda_runtime = { version = "0", default-features = false, features = ["tracing"] }
 serde = { version = "1", default-features = false, features = ["derive"] }

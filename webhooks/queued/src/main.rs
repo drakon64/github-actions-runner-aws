@@ -1,13 +1,23 @@
-use lambda_runtime::{run, service_fn, tracing, Error};
-use serde::{Deserialize, Serialize};
+use aws_lambda_events::apigw::{ApiGatewayProxyRequest, ApiGatewayProxyResponse};
+use aws_lambda_events::http::HeaderMap;
+use lambda_runtime::{run, service_fn, tracing, Error, LambdaEvent};
 
-#[derive(Deserialize)]
-struct Request {}
+async fn function_handler(
+    event: LambdaEvent<ApiGatewayProxyRequest>,
+) -> Result<ApiGatewayProxyResponse, Error> {
+    let body = event.payload.body.unwrap();
+    let headers = HeaderMap::new();
 
-#[derive(Serialize)]
-struct Response {}
+    println!("{}", body);
 
-async fn function_handler(event: Request) -> Result<Response, Error> {}
+    Ok(ApiGatewayProxyResponse {
+        body: Some(body.into()),
+        headers: headers.clone(),
+        is_base64_encoded: false,
+        multi_value_headers: headers,
+        status_code: 200,
+    })
+}
 
 #[tokio::main]
 async fn main() -> Result<(), Error> {
