@@ -39,9 +39,9 @@ async fn function_handler(event: LambdaEvent<ApiGatewayV2httpRequest>) -> Result
     let webhook = serde_json::from_str::<Webhook>(&*event.payload.body.unwrap()).unwrap();
 
     match webhook.action {
-        Action::Queued => { Ok("Queued".to_string()) }
-        Action::Completed => { Ok("Completed".to_string()) }
-        _ => { panic!() }
+        Action::Queued => { Ok("Queued".into()) }
+        Action::Completed => { Ok("Completed".into()) }
+        _ => { Ok("This webhooks runs only for `queued` and `completed` jobs".into()) }
     }
 }
 
