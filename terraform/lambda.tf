@@ -31,7 +31,7 @@ resource "aws_iam_role" "lambda" {
 }
 
 data "local_file" "lambda" {
-  filename = "${path.module}/../webhooks/queued/target/lambda/queued/bootstrap.zip"
+  filename = "${path.module}/../target/lambda/queued/bootstrap.zip"
 }
 
 resource "aws_lambda_function" "lambda" {
