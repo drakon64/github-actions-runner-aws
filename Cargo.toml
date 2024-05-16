@@ -4,9 +4,9 @@ version = "0.1.0"
 edition = "2021"
 
 [dependencies]
-aws-config = { version = "1", default-features = false }
+aws-config = { version = "1", default-features = false, features = ["behavior-version-latest", "rt-tokio"] }
 aws_lambda_events = { version = "0", default-features = false, features = ["apigw"] }
-aws-sdk-ec2 = { version =  "1", default-features = false }
+aws-sdk-ec2 = { version =  "1", default-features = false, features = ["rustls"] }
 lambda_runtime = { version = "0", default-features = false, features = ["tracing"] }
 serde = { version = "1", default-features = false, features = ["derive"] }
 serde_json = { version = "1", default-features = false }
