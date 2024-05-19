@@ -15,6 +15,7 @@ pub(crate) async fn run_instance(client: Client, webhook: Webhook) -> Result<Str
     // TODO: Get the cloud-init `ansible` module to do this
     let user_data = BASE64_STANDARD.encode(format!("#!/bin/sh
 
+add-apt-repository ppa:ansible/ansible # https://github.com/ansible/ansible/issues/77624
 apt-get update
 apt-get -y install ansible-core
 ansible-galaxy collection install amazon.aws
