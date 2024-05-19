@@ -20,6 +20,7 @@ pub(crate) async fn run_instance(client: Client, webhook: Webhook) -> Result<Str
                     .build(),
             ))
             .build()]))
+        .set_ebs_optimized(Some(true))
         .set_tag_specifications(Some(vec![TagSpecification::builder()
             .set_resource_type(Some(ResourceType::Instance))
             .set_tags(Some(vec![
