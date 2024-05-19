@@ -44,7 +44,7 @@ ansible-pull --url https://github.com/drakon64/github-actions-runner-aws.git --e
                 Tag::builder()
                     .set_key(Some("Name".into()))
                     .set_value(Some(format!(
-                        "{}-{}-{}",
+                        "{}/{}/{}",
                         repository_full_name, workflow_job_id, workflow_run_id
                     )))
                     .build(),
