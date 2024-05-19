@@ -4,6 +4,11 @@
   connection: local
   become: true
   tasks:
+  - amazon.aws.ec2_metadata_facts:
+
+  - ansible.builtin.hostname:
+      name: ansible_ec2_instance_id
+
   - ansible.builtin.user:
       create_home: yes
       groups: sudo

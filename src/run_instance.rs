@@ -12,10 +12,12 @@ pub(crate) async fn run_instance(client: Client, webhook: Webhook) -> Result<Str
     let workflow_job_id = webhook.workflow_job.id.to_string();
     let workflow_run_id = webhook.workflow_job.run_id.to_string();
 
+    // TODO: Get the cloud-init `ansible` module to do this
     let user_data = BASE64_STANDARD.encode(format!("#!/bin/sh
 
 apt-get update
 apt-get -y install ansible-core
+ansible-galaxy collection install amazon.aws
 ansible-pull --url https://github.com/drakon64/github-actions-runner-aws.git --extra-vars 'url=https://github.com/{}' --extra-vars 'token={}' ansible/runner.yml"
     , repository_full_name, create_registration_token_for_repository(&repository_full_name)));
 
