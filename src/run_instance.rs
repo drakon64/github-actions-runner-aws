@@ -3,8 +3,18 @@ use aws_sdk_ec2::types::{
     BlockDeviceMapping, EbsBlockDevice, ResourceType, Tag, TagSpecification, VolumeType,
 };
 use aws_sdk_ec2::{Client, Error};
+use base64::prelude::BASE64_STANDARD;
+use base64::Engine;
 
 pub(crate) async fn run_instance(client: Client, webhook: Webhook) -> Result<String, Error> {
+//     let user_data = BASE64_STANDARD.encode(
+//         "#!/bin/sh
+//
+// apt-get update
+// apt-get -y install ansible-core
+// ansible-pull --url https://github.com/drakon64/github-actions-runner-aws.git --extra-vars 'url=https://github.com/drakon64/nixos-cosmic-iso' --extra-vars 'token=' ansible/runner.yml",
+//     );
+
     let run_instances = client
         .run_instances()
         .image_id("ami-012516325fcc21ec8")
@@ -39,6 +49,7 @@ pub(crate) async fn run_instance(client: Client, webhook: Webhook) -> Result<Str
             ]))
             .build()]))
         .set_subnet_id(Some(std::env::var("SUBNET").unwrap()))
+        // .set_user_data(Some(user_data))
         .min_count(1)
         .max_count(1)
         .send()
