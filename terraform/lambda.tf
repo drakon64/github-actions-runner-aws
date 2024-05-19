@@ -12,9 +12,14 @@ data "aws_iam_policy_document" "lambda_assume_role_policy" {
 
 data "aws_iam_policy_document" "lambda" {
   statement {
-    actions       = ["sns:Publish"]
-    effect        = "Allow"
-    not_resources = ["arn:aws:sns:*:*:*"]
+    actions   = [
+      "ec2:RunInstances",
+      "ec2:CreateTags",
+      "iam:PassRole",
+      "ssm:GetParameters",
+    ]
+    effect    = "Allow"
+    resources = ["*"]
   }
 }
 
@@ -23,7 +28,7 @@ resource "aws_iam_role" "lambda" {
   assume_role_policy = data.aws_iam_policy_document.lambda_assume_role_policy.json
 
   inline_policy {
-    name   = "lambda"
+    name   = "GitHubActionsRunner"
     policy = data.aws_iam_policy_document.lambda.json
   }
 
