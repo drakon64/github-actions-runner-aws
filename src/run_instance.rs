@@ -7,6 +7,10 @@ use base64::prelude::BASE64_STANDARD;
 use base64::Engine;
 
 pub(crate) async fn run_instance(client: Client, webhook: Webhook) -> Result<String, Error> {
+    let repository_full_name = webhook.repository.full_name;
+    let workflow_job_id = webhook.workflow_job.id.to_string();
+    let workflow_run_id = webhook.workflow_job.run_id.to_string();
+
 //     let user_data = BASE64_STANDARD.encode(
 //         "#!/bin/sh
 //
@@ -35,16 +39,23 @@ pub(crate) async fn run_instance(client: Client, webhook: Webhook) -> Result<Str
             .set_resource_type(Some(ResourceType::Instance))
             .set_tags(Some(vec![
                 Tag::builder()
+                    .set_key(Some("Name".into()))
+                    .set_value(Some(format!(
+                        "{}-{}-{}",
+                        repository_full_name, workflow_job_id, workflow_run_id
+                    )))
+                    .build(),
+                Tag::builder()
                     .set_key(Some("GitHubActionsRepository".into()))
-                    .set_value(Some(webhook.repository.full_name))
+                    .set_value(Some(repository_full_name))
                     .build(),
                 Tag::builder()
                     .set_key(Some("GitHubActionsId".into()))
-                    .set_value(Some(webhook.workflow_job.id.to_string()))
+                    .set_value(Some(workflow_job_id))
                     .build(),
                 Tag::builder()
                     .set_key(Some("GitHubActionsRunId".into()))
-                    .set_value(Some(webhook.workflow_job.run_id.to_string()))
+                    .set_value(Some(workflow_run_id))
                     .build(),
             ]))
             .build()]))
