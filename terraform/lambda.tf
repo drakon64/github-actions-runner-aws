@@ -47,8 +47,8 @@ resource "aws_lambda_function" "lambda" {
 
   environment {
     variables = {
-      #SECRET = var.webhook_secret
       SUBNET = aws_subnet.subnet.id
+      TOKEN  = var.token
     }
   }
 

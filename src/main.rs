@@ -1,3 +1,4 @@
+mod github;
 mod run_instance;
 mod webhook;
 

@@ -1,3 +1,4 @@
+use crate::github::create_registration_token_for_repository;
 use crate::webhook::Webhook;
 use aws_sdk_ec2::types::{
     BlockDeviceMapping, EbsBlockDevice, ResourceType, Tag, TagSpecification, VolumeType,
@@ -11,13 +12,12 @@ pub(crate) async fn run_instance(client: Client, webhook: Webhook) -> Result<Str
     let workflow_job_id = webhook.workflow_job.id.to_string();
     let workflow_run_id = webhook.workflow_job.run_id.to_string();
 
-//     let user_data = BASE64_STANDARD.encode(
-//         "#!/bin/sh
-//
-// apt-get update
-// apt-get -y install ansible-core
-// ansible-pull --url https://github.com/drakon64/github-actions-runner-aws.git --extra-vars 'url=https://github.com/drakon64/nixos-cosmic-iso' --extra-vars 'token=' ansible/runner.yml",
-//     );
+    let user_data = BASE64_STANDARD.encode(format!("#!/bin/sh
+
+apt-get update
+apt-get -y install ansible-core
+ansible-pull --url https://github.com/drakon64/github-actions-runner-aws.git --extra-vars 'url=https://github.com/{}' --extra-vars 'token={}' ansible/runner.yml"
+    , repository_full_name, create_registration_token_for_repository(&repository_full_name)));
 
     let run_instances = client
         .run_instances()
@@ -60,7 +60,7 @@ pub(crate) async fn run_instance(client: Client, webhook: Webhook) -> Result<Str
             ]))
             .build()]))
         .set_subnet_id(Some(std::env::var("SUBNET").unwrap()))
-        // .set_user_data(Some(user_data))
+        .set_user_data(Some(user_data))
         .min_count(1)
         .max_count(1)
         .send()
