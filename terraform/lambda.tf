@@ -40,11 +40,12 @@ resource "aws_lambda_function" "lambda" {
 
   architectures = ["arm64"]
 
-  #   environment {
-  #     variables = {
-  #       SECRET = var.webhook_secret
-  #     }
-  #   }
+  environment {
+    variables = {
+      #SECRET = var.webhook_secret
+      SUBNET = aws_subnet.subnet.id
+    }
+  }
 
   filename         = data.local_file.lambda.filename
   handler          = "rust.handler"

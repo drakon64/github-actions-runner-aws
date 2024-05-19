@@ -37,6 +37,7 @@ pub(crate) async fn run_instance(client: Client, webhook: Webhook) -> Result<Str
                     .build(),
             ]))
             .build()]))
+        .set_subnet_id(Some(std::env::var("SUBNET").unwrap()))
         .min_count(1)
         .max_count(1)
         .send()
