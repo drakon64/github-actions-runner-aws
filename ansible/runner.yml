@@ -6,13 +6,13 @@
   tasks:
   - ansible.builtin.user:
       create_home: yes
-      groups: wheel
+      groups: sudo
       name: runner
 
   - ansible.builtin.file:
+      owner: runner
       group: runner
       mode: 0700
-      owner: runner
       path: /home/runner/actions-runner
       state: directory
 
@@ -20,8 +20,8 @@
   # TODO: Checksum
   - ansible.builtin.unarchive:
       dest: /home/runner/actions-runner
-      group: runner
       owner: runner
+      group: runner
       remote_src: yes
       src: https://github.com/actions/runner/releases/download/v2.316.1/actions-runner-linux-arm64-2.316.1.tar.gz
 
