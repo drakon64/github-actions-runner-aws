@@ -15,9 +15,9 @@ pub(crate) async fn run_instance(client: Client, webhook: Webhook) -> Result<Str
     // TODO: Get cloud-init to do this
     let user_data = BASE64_STANDARD.encode(format!("#!/bin/sh
 
-mkfs.ext4 /dev/sdb
-mkdir /hone/runner
-mount /dev/sdb /home/runner
+mkfs.ext4 /dev/nvme1n1
+mkdir -p /home/runner/actions-runner/_work
+mount /dev/nvme1n1 /home/runner
 
 add-apt-repository ppa:ansible/ansible # https://github.com/ansible/ansible/issues/77624
 apt-get update
