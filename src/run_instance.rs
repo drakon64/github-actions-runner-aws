@@ -22,7 +22,7 @@ mount /dev/nvme1n1 /home/runner
 add-apt-repository ppa:ansible/ansible # https://github.com/ansible/ansible/issues/77624
 apt-get update
 apt-get -y install ansible-core
-ansible-galaxy collection install amazon.aws
+ansible-galaxy collection install amazon.aws community.general
 ansible-pull --url https://github.com/drakon64/github-actions-runner-aws.git --extra-vars 'url=https://github.com/{}' --extra-vars 'token={}' ansible/runner.yml"
     , repository_full_name, create_registration_token_for_repository(&repository_full_name)));
 
