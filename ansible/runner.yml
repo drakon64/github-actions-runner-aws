@@ -19,13 +19,6 @@
       commands: ALL
 
   - ansible.builtin.file:
-      path: /home/runner
-      state: directory
-      owner: runner
-      group: runner
-      recurse: yes
-
-  - ansible.builtin.file:
       path: /home/runner/actions-runner
       state: directory
       owner: runner
@@ -48,12 +41,6 @@
     args:
       chdir: /home/runner/actions-runner
     become_user: runner
-
-  - ansible.builtin.file:
-      path: /home/runner/actions-runner/_work
-      state: directory
-      owner: runner
-      group: runner
 
   # TODO: Run as a oneshot service
   - ansible.builtin.shell: ./run.sh &
