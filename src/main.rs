@@ -15,13 +15,15 @@ async fn function_handler(event: LambdaEvent<ApiGatewayV2httpRequest>) -> Result
 
     let mut requested = false;
     let mut arm64 = false;
-    while requested == false && arm64 == false {
-        for label in &webhook.workflow_job.labels {
-            if label == "drakon64/github-actions-runner-aws" {
-                requested = true;
-            } else if label == "ARM64" {
-                arm64 = true;
-            }
+    for label in &webhook.workflow_job.labels {
+        if label == "drakon64/github-actions-runner-aws" {
+            requested = true;
+        } else if label == "ARM64" {
+            arm64 = true;
+        }
+
+        if requested && arm64 {
+            break;
         }
     }
 
