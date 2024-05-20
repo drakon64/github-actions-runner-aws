@@ -15,7 +15,7 @@ async fn function_handler(event: LambdaEvent<ApiGatewayV2httpRequest>) -> Result
 
     match webhook.action {
         Action::Queued => Ok(run_instance(client, webhook).await.unwrap()),
-        Action::Completed => Ok(terminate_instance(client, webhook).await.unwrap().into()),
+        Action::Completed => Ok(terminate_instance(client, webhook).await.unwrap()),
         _ => Ok("This webhooks runs only for `queued` and `completed` jobs".into()),
     }
 }
