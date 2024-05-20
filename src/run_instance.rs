@@ -12,8 +12,12 @@ pub(crate) async fn run_instance(client: Client, webhook: Webhook) -> Result<Str
     let workflow_job_id = webhook.workflow_job.id.to_string();
     let workflow_run_id = webhook.workflow_job.run_id.to_string();
 
-    // TODO: Get the cloud-init `ansible` module to do this
+    // TODO: Get cloud-init to do this
     let user_data = BASE64_STANDARD.encode(format!("#!/bin/sh
+
+mkfs.ext4 /dev/sdb
+mkdir /hone/runner
+mount /dev/sdb /home/runner
 
 add-apt-repository ppa:ansible/ansible # https://github.com/ansible/ansible/issues/77624
 apt-get update
@@ -26,17 +30,29 @@ ansible-pull --url https://github.com/drakon64/github-actions-runner-aws.git --e
         .run_instances()
         .image_id("ami-012516325fcc21ec8")
         .instance_type(aws_sdk_ec2::types::InstanceType::R7gLarge)
-        .set_block_device_mappings(Some(vec![BlockDeviceMapping::builder()
-            .set_device_name(Some("/dev/sda1".into()))
-            .set_ebs(Some(
-                EbsBlockDevice::builder()
-                    .set_delete_on_termination(Some(true))
-                    .set_snapshot_id(Some("snap-0235e2397591fdc6f".into()))
-                    .set_volume_size(Some(5))
-                    .set_volume_type(Some(VolumeType::Gp3))
-                    .build(),
-            ))
-            .build()]))
+        .set_block_device_mappings(Some(vec![
+            BlockDeviceMapping::builder()
+                .set_device_name(Some("/dev/sda1".into()))
+                .set_ebs(Some(
+                    EbsBlockDevice::builder()
+                        .set_delete_on_termination(Some(true))
+                        .set_snapshot_id(Some("snap-0235e2397591fdc6f".into()))
+                        .set_volume_size(Some(5))
+                        .set_volume_type(Some(VolumeType::Gp3))
+                        .build(),
+                ))
+                .build(),
+            BlockDeviceMapping::builder()
+                .set_device_name(Some("/dev/sdb".into()))
+                .set_ebs(Some(
+                    EbsBlockDevice::builder()
+                        .set_delete_on_termination(Some(true))
+                        .set_volume_size(Some(14))
+                        .set_volume_type(Some(VolumeType::Gp3))
+                        .build(),
+                ))
+                .build(),
+        ]))
         .set_ebs_optimized(Some(true))
         .set_tag_specifications(Some(vec![TagSpecification::builder()
             .set_resource_type(Some(ResourceType::Instance))
