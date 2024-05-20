@@ -10,9 +10,13 @@
       name: "{{ ansible_ec2_instance_id }}"
 
   - ansible.builtin.user:
-      create_home: yes
-      groups: sudo
       name: runner
+      create_home: yes
+
+  - community.general.sudoers:
+      name: github-actions-runner
+      user: runner
+      commands: ALL
 
   - ansible.builtin.file:
       owner: runner
