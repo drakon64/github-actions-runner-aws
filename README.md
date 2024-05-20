@@ -23,6 +23,7 @@ tofu apply
 
 # Roadmap
 * Webhook signing
+* Implement our own JWT
 * Launch EC2 instances from a Launch Template
   * Will allow for deploying outside the `eu-west-2` AWS region
 * Allow EBS volume size to be configurable
