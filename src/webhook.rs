@@ -39,4 +39,10 @@ pub(crate) struct WorkflowJob {
 #[derive(Deserialize)]
 pub(crate) struct Repository {
     pub(crate) full_name: String,
+    pub(crate) owner: Owner,
+}
+
+#[derive(Deserialize)]
+pub(crate) struct Owner {
+    pub(crate) login: String,
 }

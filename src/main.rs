@@ -11,6 +11,17 @@ use lambda_runtime::{run, service_fn, tracing, Error, LambdaEvent};
 
 async fn function_handler(event: LambdaEvent<ApiGatewayV2httpRequest>) -> Result<String, Error> {
     let webhook = serde_json::from_str::<Webhook>(&*event.payload.body.unwrap()).unwrap();
+
+    // TODO: Ugly hack, remove this in your own deployments
+    if !(webhook.repository.owner.login == "drakon64"
+        || webhook.repository.owner.login == "lilyinstarlight")
+    {
+        panic!(
+            "Unauthorised repository owner: {}",
+            webhook.repository.owner.login
+        )
+    }
+
     let client = aws_sdk_ec2::Client::new(&aws_config::load_from_env().await);
 
     let mut requested = false;
