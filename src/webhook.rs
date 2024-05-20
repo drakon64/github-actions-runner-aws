@@ -26,6 +26,7 @@ pub(crate) enum Action {
 pub(crate) struct WorkflowJob {
     pub(crate) id: u64,
     pub(crate) run_id: u64,
+    pub(crate) runner_name: Some(String),
 }
 
 #[derive(Deserialize)]

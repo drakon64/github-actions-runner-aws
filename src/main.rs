@@ -1,8 +1,10 @@
 mod github;
 mod run_instance;
+mod terminate_instance;
 mod webhook;
 
 use crate::run_instance::run_instance;
+use crate::terminate_instance::terminate_instance;
 use crate::webhook::{Action, Webhook};
 use aws_lambda_events::apigw::ApiGatewayV2httpRequest;
 use lambda_runtime::{run, service_fn, tracing, Error, LambdaEvent};
@@ -13,7 +15,7 @@ async fn function_handler(event: LambdaEvent<ApiGatewayV2httpRequest>) -> Result
 
     match webhook.action {
         Action::Queued => Ok(run_instance(client, webhook).await.unwrap()),
-        Action::Completed => Ok("Completed".into()),
+        Action::Completed => Ok(terminate_instance(client, webhook).await.unwrap().into()),
         _ => Ok("This webhooks runs only for `queued` and `completed` jobs".into()),
     }
 }
