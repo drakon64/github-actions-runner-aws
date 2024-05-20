@@ -7,10 +7,14 @@ use crate::run_instance::run_instance;
 use crate::terminate_instance::terminate_instance;
 use crate::webhook::{Action, Webhook};
 use aws_lambda_events::apigw::ApiGatewayV2httpRequest;
+use hmac::{Hmac, Mac};
 use lambda_runtime::{run, service_fn, tracing, Error, LambdaEvent};
+use sha2::Sha256;
+use std::env;
 
 async fn function_handler(event: LambdaEvent<ApiGatewayV2httpRequest>) -> Result<String, Error> {
-    let webhook = serde_json::from_str::<Webhook>(&*event.payload.body.unwrap()).unwrap();
+    let body = event.payload.body.unwrap();
+    let webhook = serde_json::from_str::<Webhook>(&*body).unwrap();
 
     // TODO: Ugly hack, remove this in your own deployments
     if !(webhook.repository.owner.login == "drakon64"
@@ -21,6 +25,22 @@ async fn function_handler(event: LambdaEvent<ApiGatewayV2httpRequest>) -> Result
             webhook.repository.owner.login
         )
     }
+
+    let mut hmac =
+        Hmac::<Sha256>::new_from_slice(env::var("SECRET_TOKEN").unwrap().as_bytes()).unwrap();
+    hmac.update(body.as_bytes());
+    hmac.verify_slice(
+        hex::decode(
+            &event.payload.headers["X-Hub-Signature-256"]
+                .to_str()
+                .unwrap()
+                .strip_prefix("sha256=")
+                .unwrap(),
+        )
+        .unwrap()
+        .as_slice(),
+    )
+    .unwrap();
 
     let client = aws_sdk_ec2::Client::new(&aws_config::load_from_env().await);
 

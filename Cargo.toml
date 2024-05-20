@@ -8,11 +8,14 @@ aws-config = { version = "1", default-features = false, features = ["behavior-ve
 aws_lambda_events = { version = "0", default-features = false, features = ["apigw"] }
 aws-sdk-ec2 = { version =  "1", default-features = false, features = ["rustls"] }
 base64 = { version = "0", default-features = false }
+hex = { version = "0", default-features = false }
+hmac = { version = "0", default-features = false }
 jsonwebtoken = { version = "9", default-features = false, features = ["use_pem"] }
 lambda_runtime = { version = "0", default-features = false, features = ["tracing"] }
 reqwest = { version = "0", default-features = false, features = ["blocking", "json", "rustls-tls-native-roots"] }
 serde = { version = "1", default-features = false, features = ["derive"] }
 serde_json = { version = "1", default-features = false }
+sha2 = { version = "0.10.8", default-features = false }
 tokio = { version = "1", default-features = false, features = ["macros", "rt"] }
 
 [profile.release]

@@ -48,9 +48,10 @@ resource "aws_lambda_function" "lambda" {
 
   environment {
     variables = {
-      SUBNET      = aws_subnet.subnet.id
-      CLIENT_ID   = var.client_id
-      PRIVATE_KEY = var.private_key
+      SUBNET       = aws_subnet.subnet.id
+      CLIENT_ID    = var.client_id
+      PRIVATE_KEY  = var.private_key
+      SECRET_TOKEN = var.secret_token
     }
   }
 
