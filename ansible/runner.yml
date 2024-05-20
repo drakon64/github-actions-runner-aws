@@ -2,7 +2,7 @@
 
 - hosts: 127.0.0.1
   connection: local
-  become: true
+  become: yes
   tasks:
   - amazon.aws.ec2_metadata_facts:
 
@@ -13,17 +13,17 @@
       name: runner
       create_home: yes
 
+  - ansible.builtin.file:
+      path: /home/runner
+      state: directory
+      owner: runner
+      group: runner
+      recurse: yes
+
   - community.general.sudoers:
       name: github-actions-runner
       user: runner
       commands: ALL
-
-  - ansible.builtin.file:
-      path: /home/runner/actions-runner
-      state: directory
-      owner: runner
-      group: runner
-      mode: 0700
 
   # TODO: Avoid hard-coding version
   # TODO: Checksum
