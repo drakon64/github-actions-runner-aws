@@ -17,6 +17,7 @@ data "aws_iam_policy_document" "lambda" {
       "ec2:CreateTags",
       "iam:PassRole",
       "ssm:GetParameters",
+      "ec2:TerminateInstances",
     ]
     effect    = "Allow"
     resources = ["*"]
