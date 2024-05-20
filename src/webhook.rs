@@ -3,6 +3,7 @@ use serde::Deserialize;
 #[derive(Deserialize)]
 pub(crate) struct Webhook {
     pub(crate) action: Action,
+    pub(crate) installation: Installation,
     pub(crate) workflow_job: WorkflowJob,
     pub(crate) repository: Repository,
 }
@@ -20,6 +21,11 @@ pub(crate) enum Action {
 
     #[serde(rename = "completed")]
     Completed,
+}
+
+#[derive(Deserialize)]
+pub(crate) struct Installation {
+    pub(crate) id: u32,
 }
 
 #[derive(Deserialize)]

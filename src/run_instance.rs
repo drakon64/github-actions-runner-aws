@@ -10,7 +10,7 @@ use base64::Engine;
 use std::str::FromStr;
 
 pub(crate) async fn run_instance(client: Client, webhook: Webhook) -> Result<String, Error> {
-    let repository_full_name = webhook.repository.full_name;
+    let repository_full_name = &webhook.repository.full_name;
     let workflow_job_id = webhook.workflow_job.id.to_string();
     let workflow_run_id = webhook.workflow_job.run_id.to_string();
 
@@ -23,7 +23,7 @@ apt-get -y install ansible-core
 apt-get clean
 ansible-galaxy collection install amazon.aws community.general
 ansible-pull --url https://github.com/drakon64/github-actions-runner-aws.git --extra-vars 'url=https://github.com/{}' --extra-vars 'token={}' ansible/runner.yml"
-    , repository_full_name, create_registration_token_for_repository(&repository_full_name)));
+    , &repository_full_name, create_registration_token_for_repository(&repository_full_name, &webhook)));
 
     let mut instance_type = InstanceType::M7gLarge;
     for label in webhook.workflow_job.labels {
@@ -65,7 +65,7 @@ ansible-pull --url https://github.com/drakon64/github-actions-runner-aws.git --e
                     .build(),
                 Tag::builder()
                     .set_key(Some("GitHubActionsRepository".into()))
-                    .set_value(Some(repository_full_name))
+                    .set_value(Some(repository_full_name.clone()))
                     .build(),
                 Tag::builder()
                     .set_key(Some("GitHubActionsId".into()))
