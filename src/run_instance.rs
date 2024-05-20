@@ -1,7 +1,8 @@
 use crate::github::create_registration_token_for_repository;
 use crate::webhook::Webhook;
 use aws_sdk_ec2::types::{
-    BlockDeviceMapping, EbsBlockDevice, ResourceType, Tag, TagSpecification, VolumeType,
+    BlockDeviceMapping, EbsBlockDevice, ResourceType, RunInstancesMonitoringEnabled, Tag,
+    TagSpecification, VolumeType,
 };
 use aws_sdk_ec2::{Client, Error};
 use base64::prelude::BASE64_STANDARD;
@@ -38,6 +39,11 @@ ansible-pull --url https://github.com/drakon64/github-actions-runner-aws.git --e
             ))
             .build()]))
         .set_ebs_optimized(Some(true))
+        .set_monitoring(Some(
+            RunInstancesMonitoringEnabled::builder()
+                .set_enabled(Some(true))
+                .build(),
+        ))
         .set_tag_specifications(Some(vec![TagSpecification::builder()
             .set_resource_type(Some(ResourceType::Instance))
             .set_tags(Some(vec![
