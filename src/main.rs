@@ -13,6 +13,24 @@ async fn function_handler(event: LambdaEvent<ApiGatewayV2httpRequest>) -> Result
     let webhook = serde_json::from_str::<Webhook>(&*event.payload.body.unwrap()).unwrap();
     let client = aws_sdk_ec2::Client::new(&aws_config::load_from_env().await);
 
+    let mut requested = false;
+    let mut arm64 = false;
+    while requested == false && arm64 == false {
+        for label in &webhook.workflow_job.labels {
+            if label == "drakon64/github-actions-runner-aws" {
+                requested = true;
+            } else if label == "ARM64" {
+                arm64 = true;
+            }
+        }
+    }
+
+    if requested == false && arm64 == false {
+        return Ok("EC2 runner not requested.".into());
+    } else if requested && arm64 == false {
+        return Ok("EC2 runner requested but ARM64 not requested.".into()); // TODO: This should be an error
+    }
+
     match webhook.action {
         Action::Queued => Ok(run_instance(client, webhook).await.unwrap()),
         Action::Completed => Ok(terminate_instance(client, webhook).await.unwrap()),
