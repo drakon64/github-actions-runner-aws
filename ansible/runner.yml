@@ -13,6 +13,11 @@
       name: runner
       create_home: yes
 
+  - community.general.sudoers:
+      name: github-actions-runner
+      user: runner
+      commands: ALL
+
   - ansible.builtin.file:
       path: /home/runner
       state: directory
@@ -20,10 +25,11 @@
       group: runner
       recurse: yes
 
-  - community.general.sudoers:
-      name: github-actions-runner
-      user: runner
-      commands: ALL
+  - ansible.builtin.file:
+      path: /home/runner/actions-runner
+      state: directory
+      owner: runner
+      group: runner
 
   # TODO: Avoid hard-coding version
   # TODO: Checksum
