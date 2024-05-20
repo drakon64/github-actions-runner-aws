@@ -1,12 +1,13 @@
 use crate::github::create_registration_token_for_repository;
 use crate::webhook::Webhook;
 use aws_sdk_ec2::types::{
-    BlockDeviceMapping, EbsBlockDevice, ResourceType, RunInstancesMonitoringEnabled, Tag,
-    TagSpecification, VolumeType,
+    BlockDeviceMapping, EbsBlockDevice, InstanceType, ResourceType, RunInstancesMonitoringEnabled,
+    Tag, TagSpecification, VolumeType,
 };
 use aws_sdk_ec2::{Client, Error};
 use base64::prelude::BASE64_STANDARD;
 use base64::Engine;
+use std::str::FromStr;
 
 pub(crate) async fn run_instance(client: Client, webhook: Webhook) -> Result<String, Error> {
     let repository_full_name = webhook.repository.full_name;
@@ -24,10 +25,17 @@ ansible-galaxy collection install amazon.aws community.general
 ansible-pull --url https://github.com/drakon64/github-actions-runner-aws.git --extra-vars 'url=https://github.com/{}' --extra-vars 'token={}' ansible/runner.yml"
     , repository_full_name, create_registration_token_for_repository(&repository_full_name)));
 
+    let mut instance_type = InstanceType::M7gLarge;
+    for label in webhook.workflow_job.labels {
+        if label.starts_with("EC2-") {
+            instance_type = InstanceType::from_str(label.strip_prefix("EC2-").unwrap()).unwrap();
+        }
+    }
+
     let run_instances = client
         .run_instances()
         .image_id("ami-012516325fcc21ec8")
-        .instance_type(aws_sdk_ec2::types::InstanceType::R7gLarge)
+        .instance_type(instance_type)
         .set_block_device_mappings(Some(vec![BlockDeviceMapping::builder()
             .set_device_name(Some("/dev/sda1".into()))
             .set_ebs(Some(

@@ -25,6 +25,7 @@ pub(crate) enum Action {
 #[derive(Deserialize)]
 pub(crate) struct WorkflowJob {
     pub(crate) id: u64,
+    pub(crate) labels: Vec<String>,
     pub(crate) run_id: u64,
     pub(crate) runner_name: Option<String>,
 }

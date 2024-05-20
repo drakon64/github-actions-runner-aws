@@ -5,7 +5,6 @@
 # Limitations
 * Only the `eu-west-2` AWS region is supported
 * All runner instances use Ubuntu 22.04 AArch64 as their OS
-* All runner instances use the `r7g.large` instance type
 
 # Building
 To compile `github-actions-runner-aws` so that the included OpenTofu configuration can deploy it, run:
