@@ -73,6 +73,10 @@ resource "aws_launch_template" "ubuntu" {
 
   image_id = data.aws_ami.ubuntu[each.value].id
 
+  monitoring {
+    enabled = true
+  }
+
   network_interfaces {
     delete_on_termination = true
     subnet_id             = aws_subnet.subnet.id
