@@ -104,7 +104,13 @@ pub(crate) fn generate_json_web_token() -> String {
             exp: time + (10 * 60),
             iss: env::var("CLIENT_ID").unwrap(),
         },
-        &EncodingKey::from_rsa_pem(env::var("PRIVATE_KEY").unwrap().as_ref()).unwrap(), // TODO: Get the private key from AWS Secrets Manager
+        &EncodingKey::from_rsa_pem(
+            env::var("PRIVATE_KEY")
+                .unwrap()
+                .replace("\\n", "\n")
+                .as_ref(),
+        )
+        .unwrap(), // TODO: Get the private key from AWS Secrets Manager
     )
     .unwrap()
 }
