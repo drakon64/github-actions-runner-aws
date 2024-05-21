@@ -1,5 +1,5 @@
 use crate::webhook::Webhook;
-use jsonwebtoken::{encode, Algorithm, EncodingKey, Header};
+use jsonwebtoken::{Algorithm, EncodingKey, Header};
 use reqwest::blocking::Client;
 use reqwest::header::HeaderMap;
 use serde::{Deserialize, Serialize};
@@ -97,7 +97,7 @@ pub(crate) fn generate_json_web_token() -> String {
         .unwrap()
         .as_secs();
 
-    encode(
+    jsonwebtoken::encode(
         &Header::new(Algorithm::RS256),
         &Claims {
             iat: time - 60,
