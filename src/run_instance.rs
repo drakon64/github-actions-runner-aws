@@ -1,12 +1,13 @@
 use crate::github::create_registration_token_for_repository;
 use crate::webhook::Webhook;
 use aws_sdk_ec2::types::{
-    BlockDeviceMapping, EbsBlockDevice, InstanceType, ResourceType, RunInstancesMonitoringEnabled,
+    BlockDeviceMapping, EbsBlockDevice, InstanceType, LaunchTemplateSpecification, ResourceType,
     Tag, TagSpecification, VolumeType,
 };
 use aws_sdk_ec2::{Client, Error};
 use base64::prelude::BASE64_STANDARD;
 use base64::Engine;
+use std::env;
 use std::str::FromStr;
 
 pub(crate) async fn run_instance(client: Client, webhook: Webhook) -> Result<String, Error> {
@@ -38,23 +39,22 @@ ansible-pull --url https://github.com/drakon64/github-actions-runner-aws.git --e
 
     let run_instances = client
         .run_instances()
-        .image_id("ami-012516325fcc21ec8")
         .instance_type(instance_type)
+        .max_count(1)
+        .min_count(1)
         .set_block_device_mappings(Some(vec![BlockDeviceMapping::builder()
             .set_device_name(Some("/dev/sda1".into()))
             .set_ebs(Some(
                 EbsBlockDevice::builder()
                     .set_delete_on_termination(Some(true))
-                    .set_snapshot_id(Some("snap-0235e2397591fdc6f".into()))
                     .set_volume_size(Some(volume_size))
                     .set_volume_type(Some(VolumeType::Gp3))
                     .build(),
             ))
             .build()]))
-        .set_ebs_optimized(Some(true))
-        .set_monitoring(Some(
-            RunInstancesMonitoringEnabled::builder()
-                .set_enabled(Some(true))
+        .set_launch_template(Some(
+            LaunchTemplateSpecification::builder()
+                .set_launch_template_id(Some(env::var("ARM64_LAUNCH_TEMPLATE_ID").unwrap()))
                 .build(),
         ))
         .set_tag_specifications(Some(vec![TagSpecification::builder()
@@ -81,10 +81,7 @@ ansible-pull --url https://github.com/drakon64/github-actions-runner-aws.git --e
                     .build(),
             ]))
             .build()]))
-        .set_subnet_id(Some(std::env::var("SUBNET").unwrap()))
         .set_user_data(Some(user_data))
-        .min_count(1)
-        .max_count(1)
         .send()
         .await?;
 
