@@ -1,5 +1,5 @@
 resource "aws_apigatewayv2_api" "api_gateway" {
-  name = "GitHubActionsRunner"
+  name = "${var.prefix}GitHubActionsRunner${var.suffix}"
 
   protocol_type = "HTTP"
 }

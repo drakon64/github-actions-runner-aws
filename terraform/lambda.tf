@@ -25,7 +25,7 @@ data "aws_iam_policy_document" "lambda" {
 }
 
 resource "aws_iam_role" "lambda" {
-  name               = "GitHubActionsRunner"
+  name               = "${var.prefix}GitHubActionsRunner${var.suffix}"
   assume_role_policy = data.aws_iam_policy_document.lambda_assume_role_policy.json
 
   inline_policy {
@@ -42,7 +42,7 @@ data "aws_s3_object" "lambda" {
 }
 
 resource "aws_lambda_function" "lambda" {
-  function_name = "GitHubActionsRunner"
+  function_name = "${var.prefix}GitHubActionsRunner${var.suffix}"
   role          = aws_iam_role.lambda.arn
 
   architectures = ["arm64"]
