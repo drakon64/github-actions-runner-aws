@@ -36,8 +36,9 @@ resource "aws_iam_role" "lambda" {
   managed_policy_arns = ["arn:aws:iam::aws:policy/service-role/AWSLambdaBasicExecutionRole"]
 }
 
-data "local_file" "lambda" {
-  filename = "${path.module}/../target/lambda/github-actions-runner-aws/bootstrap.zip"
+data "aws_s3_object" "lambda" {
+  bucket = "drakon64-github-actions-runner-aws"
+  key    = "bootstrap.zip"
 }
 
 resource "aws_lambda_function" "lambda" {
@@ -55,12 +56,13 @@ resource "aws_lambda_function" "lambda" {
     }
   }
 
-  filename         = data.local_file.lambda.filename
   handler          = "rust.handler"
   memory_size      = 128
   package_type     = "Zip"
   runtime          = "provided.al2023"
-  source_code_hash = data.local_file.lambda.content_base64sha256
+  s3_bucket        = data.aws_s3_object.lambda.bucket
+  s3_key           = data.aws_s3_object.lambda.key
+  source_code_hash = data.aws_s3_object.lambda.checksum_sha256
   timeout          = 3
 }
 
