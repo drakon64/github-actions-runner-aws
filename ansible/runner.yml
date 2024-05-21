@@ -33,6 +33,13 @@
       remote_src: yes
       src: https://github.com/actions/runner/releases/download/v2.316.1/actions-runner-linux-arm64-2.316.1.tar.gz
 
+  - ansible.builtin.template:
+      src: tag.sh.j2
+      dest: /home/runner/tag.sh
+      owner: runner
+      group: runner
+      mode: 0700
+
   - ansible.builtin.command: ./bin/installdependencies.sh
     args:
       chdir: /home/runner/actions-runner
@@ -41,6 +48,13 @@
     args:
       chdir: /home/runner/actions-runner
     become_user: runner
+
+  - ansible.builtin.copy:
+      dest: /home/runner/actions-runner/.env
+      content: ACTIONS_RUNNER_HOOK_JOB_STARTED=/home/runner/tag.sh
+      owner: runner
+      group: runner
+      mode: 0600
 
   # TODO: Run as a oneshot service
   - ansible.builtin.shell: ./run.sh &

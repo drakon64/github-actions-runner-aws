@@ -12,15 +12,13 @@ use std::str::FromStr;
 
 pub(crate) async fn run_instance(client: Client, webhook: Webhook) -> Result<String, Error> {
     let repository_full_name = &webhook.repository.full_name;
-    let workflow_job_id = webhook.workflow_job.id.to_string();
-    let workflow_run_id = webhook.workflow_job.run_id.to_string();
 
     // TODO: Get cloud-init to do this
     let user_data = BASE64_STANDARD.encode(format!("#!/bin/sh
 
 add-apt-repository ppa:ansible/ansible # https://github.com/ansible/ansible/issues/77624
 apt-get update
-apt-get -y install ansible-core
+apt-get -y install ansible-core awscli
 apt-get clean
 ansible-galaxy collection install amazon.aws community.general
 ansible-pull --url https://github.com/drakon64/github-actions-runner-aws.git --extra-vars 'url=https://github.com/{}' --extra-vars 'token={}' ansible/runner.yml"
@@ -62,22 +60,11 @@ ansible-pull --url https://github.com/drakon64/github-actions-runner-aws.git --e
             .set_tags(Some(vec![
                 Tag::builder()
                     .set_key(Some("Name".into()))
-                    .set_value(Some(format!(
-                        "{}/{}/{}",
-                        repository_full_name, workflow_run_id, workflow_job_id
-                    )))
+                    .set_value(Some(repository_full_name.clone()))
                     .build(),
                 Tag::builder()
                     .set_key(Some("GitHubActionsRepository".into()))
                     .set_value(Some(repository_full_name.clone()))
-                    .build(),
-                Tag::builder()
-                    .set_key(Some("GitHubActionsRunId".into()))
-                    .set_value(Some(workflow_run_id))
-                    .build(),
-                Tag::builder()
-                    .set_key(Some("GitHubActionsId".into()))
-                    .set_value(Some(workflow_job_id))
                     .build(),
             ]))
             .build()]))
