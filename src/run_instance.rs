@@ -64,7 +64,7 @@ ansible-pull --url https://github.com/drakon64/github-actions-runner-aws.git --e
                     .set_key(Some("Name".into()))
                     .set_value(Some(format!(
                         "{}/{}/{}",
-                        repository_full_name, workflow_job_id, workflow_run_id
+                        repository_full_name, workflow_run_id, workflow_job_id
                     )))
                     .build(),
                 Tag::builder()
@@ -72,12 +72,12 @@ ansible-pull --url https://github.com/drakon64/github-actions-runner-aws.git --e
                     .set_value(Some(repository_full_name.clone()))
                     .build(),
                 Tag::builder()
-                    .set_key(Some("GitHubActionsId".into()))
-                    .set_value(Some(workflow_job_id))
-                    .build(),
-                Tag::builder()
                     .set_key(Some("GitHubActionsRunId".into()))
                     .set_value(Some(workflow_run_id))
+                    .build(),
+                Tag::builder()
+                    .set_key(Some("GitHubActionsId".into()))
+                    .set_value(Some(workflow_job_id))
                     .build(),
             ]))
             .build()]))
