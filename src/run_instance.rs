@@ -26,9 +26,13 @@ ansible-pull --url https://github.com/drakon64/github-actions-runner-aws.git --e
     , &repository_full_name, create_registration_token_for_repository(&repository_full_name, &webhook)));
 
     let mut instance_type = InstanceType::M7gLarge;
+    let mut volume_size: i32 = 30; // This can fit in an u16
+
     for label in webhook.workflow_job.labels {
         if label.starts_with("EC2-") {
             instance_type = InstanceType::from_str(label.strip_prefix("EC2-").unwrap()).unwrap();
+        } else if label.starts_with("EBS-") {
+            volume_size = i32::from_str(label.strip_prefix("EBS-").unwrap()).unwrap();
         }
     }
 
@@ -42,7 +46,7 @@ ansible-pull --url https://github.com/drakon64/github-actions-runner-aws.git --e
                 EbsBlockDevice::builder()
                     .set_delete_on_termination(Some(true))
                     .set_snapshot_id(Some("snap-0235e2397591fdc6f".into()))
-                    .set_volume_size(Some(30))
+                    .set_volume_size(Some(volume_size))
                     .set_volume_type(Some(VolumeType::Gp3))
                     .build(),
             ))

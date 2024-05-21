@@ -27,5 +27,4 @@ tofu apply
 * Launch EC2 instances from a Launch Template
   * Will allow for deploying outside the `eu-west-2` AWS region
 * Documentation
-* Allow EBS volume size to be configurable
 * Support x86_64 EC2 instances
