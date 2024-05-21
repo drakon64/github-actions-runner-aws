@@ -26,21 +26,21 @@ async fn function_handler(event: LambdaEvent<ApiGatewayV2httpRequest>) -> Result
         )
     }
 
-    let mut hmac =
-        Hmac::<Sha256>::new_from_slice(env::var("SECRET_TOKEN").unwrap().as_bytes()).unwrap();
-    hmac.update(body.as_bytes());
-    hmac.verify_slice(
-        hex::decode(
-            &event.payload.headers["X-Hub-Signature-256"]
-                .to_str()
-                .unwrap()
-                .strip_prefix("sha256=")
-                .unwrap(),
-        )
+    Hmac::<Sha256>::new_from_slice(env::var("SECRET_TOKEN").unwrap().as_bytes())
         .unwrap()
-        .as_slice(),
-    )
-    .unwrap();
+        .chain_update(body.as_bytes())
+        .verify_slice(
+            hex::decode(
+                &event.payload.headers["X-Hub-Signature-256"]
+                    .to_str()
+                    .unwrap()
+                    .strip_prefix("sha256=")
+                    .unwrap(),
+            )
+            .unwrap()
+            .as_slice(),
+        )
+        .unwrap();
 
     let client = aws_sdk_ec2::Client::new(&aws_config::load_from_env().await);
 
