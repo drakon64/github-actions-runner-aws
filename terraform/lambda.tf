@@ -37,8 +37,8 @@ resource "aws_iam_role" "lambda" {
 }
 
 data "aws_s3_object" "lambda" {
-  bucket = "drakon64-github-actions-runner-aws"
-  key    = "bootstrap.zip"
+  bucket = var.bucket
+  key    = var.object
 }
 
 resource "aws_lambda_function" "lambda" {

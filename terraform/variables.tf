@@ -1,3 +1,13 @@
+variable "bucket" {
+  type      = string
+  sensitive = true
+}
+
+variable "object" {
+  type    = string
+  default = "bootstrap.zip"
+}
+
 variable "region" {
   type = string
 }
