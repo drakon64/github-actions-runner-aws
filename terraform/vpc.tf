@@ -11,6 +11,7 @@ resource "aws_subnet" "subnet" {
   cidr_block = "192.168.0.0/16"
 
   map_public_ip_on_launch = true
+  private_dns_hostname_type_on_launch = "resource-name"
 }
 
 resource "aws_internet_gateway" "igw" {
