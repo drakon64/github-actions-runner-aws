@@ -56,10 +56,12 @@ async fn function_handler(event: LambdaEvent<ApiGatewayV2httpRequest>) -> Result
         }
     }
 
-    if requested == false && arm64 == false {
-        return Ok("EC2 runner not requested.".into());
-    } else if requested && arm64 == false {
-        return Ok("EC2 runner requested but ARM64 not requested.".into()); // TODO: This should be an error
+    if requested {
+        if arm64 == false {
+            return Ok("EC2 runner requested but ARM64 not requested.".into()); // TODO: This should be an error
+        }
+    } else {
+        return Ok("EC2 runner not requested.".into()); // TODO: Return a HTTP status of no action (or no content)
     }
 
     let client = aws_sdk_ec2::Client::new(&aws_config::load_from_env().await);
