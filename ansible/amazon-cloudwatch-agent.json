@@ -1,7 +1,7 @@
 {
   "agent": {
     "metrics_collection_interval": 60,
-    "run_as_user": "cwagent"
+    "run_as_user": "root"
   },
   "logs": {
     "logs_collected": {
@@ -9,15 +9,15 @@
         "collect_list": [
           {
             "file_path": "/home/runner/actions-runner/_diag/Runner_*.log",
-            "log_group_class": "INFREQUENT_ACCESS",
-            "log_group_name": "Runner",
+            "log_group_class": "STANDARD",
+            "log_group_name": "GitHubActionsRunner-Runner",
             "log_stream_name": "{instance_id}",
             "retention_in_days": 7
           },
           {
             "file_path": "/home/runner/actions-runner/_diag/Worker_*.log",
-            "log_group_class": "INFREQUENT_ACCESS",
-            "log_group_name": "Worker",
+            "log_group_class": "STANDARD",
+            "log_group_name": "GitHubActionsRunner-Worker",
             "log_stream_name": "{instance_id}",
             "retention_in_days": 7
           }
