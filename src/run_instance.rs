@@ -57,6 +57,8 @@ ansible-pull --url https://github.com/drakon64/github-actions-runner-aws.git --e
                 .set_ebs(Some(
                     EbsBlockDevice::builder()
                         .set_delete_on_termination(Some(true))
+                        .set_iops(Some(3000))
+                        .set_throughput(Some(128))
                         .set_volume_size(Some(volume_size))
                         .set_volume_type(Some(VolumeType::Gp3))
                         .build(),
@@ -67,6 +69,8 @@ ansible-pull --url https://github.com/drakon64/github-actions-runner-aws.git --e
                 .set_ebs(Some(
                     EbsBlockDevice::builder()
                         .set_delete_on_termination(Some(true))
+                        .set_iops(Some(3000))
+                        .set_throughput(Some(128))
                         .set_volume_size(Some(16))
                         .set_volume_type(Some(VolumeType::Gp3))
                         .build(),
