@@ -5,7 +5,6 @@
 For each workflow job in a repository, a webhook is sent to AWS API Gateway. This runs a Lambda function that creates an EC2 instance with the GitHub Actions runner deployed. When the workflow job is completed, another webhook terminates the EC2 instance.
 
 # Limitations
-* Only the `eu-west-2` AWS region is supported
 * All runner instances use Ubuntu 22.04 AArch64 as their OS
 
 # Building
@@ -22,9 +21,8 @@ tofu apply
 ```
 
 # Roadmap
+* Add CloudWatch Agent to instances
 * Remove repository owner hack
 * Implement our own JWT
-* Launch EC2 instances from a Launch Template
-  * Will allow for deploying outside the `eu-west-2` AWS region
 * Documentation
 * Support x86_64 EC2 instances
