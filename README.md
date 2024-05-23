@@ -25,4 +25,3 @@ tofu apply
 * Remove repository owner hack
 * Implement our own JWT
 * Documentation
-* Support x86_64 EC2 instances

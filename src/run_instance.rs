@@ -14,12 +14,15 @@ pub(crate) async fn run_instance(client: Client, webhook: Webhook) -> Result<Str
     let repository_full_name = &webhook.repository.full_name;
 
     let mut instance_type = InstanceType::M7gLarge;
+    let mut launch_template_variable = "ARM64_LAUNCH_TEMPLATE_ID";
     let mut volume_size: i32 = 14; // This can fit in an u16
 
     for label in &webhook.workflow_job.labels {
-        if label.starts_with("EC2-") {
+        if label == "X64" {
+            launch_template_variable = "X64_LAUNCH_TEMPLATE_ID";
+        } else if label.starts_with("EC2-") {
             instance_type = InstanceType::from_str(label.strip_prefix("EC2-").unwrap()).unwrap();
-        } else if label.starts_with("EBS-") {
+        } else if label.starts_with("EBS-") && label.ends_with("GB") {
             volume_size = i32::from_str(
                 label
                     .strip_prefix("EBS-")
@@ -79,7 +82,7 @@ ansible-pull --url https://github.com/drakon64/github-actions-runner-aws.git --e
         ]))
         .set_launch_template(Some(
             LaunchTemplateSpecification::builder()
-                .set_launch_template_id(Some(env::var("ARM64_LAUNCH_TEMPLATE_ID").unwrap()))
+                .set_launch_template_id(Some(env::var(launch_template_variable).unwrap()))
                 .build(),
         ))
         .set_tag_specifications(Some(vec![TagSpecification::builder()

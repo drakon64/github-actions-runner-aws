@@ -7,7 +7,7 @@
   - amazon.aws.ec2_metadata_facts:
 
   - ansible.builtin.apt:
-      deb: https://amazoncloudwatch-agent.s3.amazonaws.com/ubuntu/arm64/latest/amazon-cloudwatch-agent.deb
+      deb: https://amazoncloudwatch-agent.s3.amazonaws.com/ubuntu/{% if ansible_architecture == "x86_64" %}amd64{% else %}arm64{% endif %}/latest/amazon-cloudwatch-agent.deb
 
   - ansible.builtin.copy:
       src: amazon-cloudwatch-agent.json
@@ -42,7 +42,7 @@
       owner: runner
       group: runner
       remote_src: yes
-      src: https://github.com/actions/runner/releases/download/v2.316.1/actions-runner-linux-arm64-2.316.1.tar.gz
+      src: https://github.com/actions/runner/releases/download/v2.316.1/actions-runner-linux-{% if ansible_architecture == "x86_64" %}x64{% else %}arm64{% endif %}-2.316.1.tar.gz
 
   - ansible.builtin.template:
       src: tag.sh.j2
