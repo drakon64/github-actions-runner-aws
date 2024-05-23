@@ -79,6 +79,8 @@ resource "aws_launch_template" "ubuntu" {
     enabled = true
   }
 
+  name = "${var.prefix}GitHubActionsRunner${var.suffix}-${each.value}"
+
   network_interfaces {
     delete_on_termination = true
     subnet_id             = aws_subnet.subnet.id
