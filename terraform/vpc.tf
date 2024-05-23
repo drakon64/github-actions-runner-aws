@@ -10,7 +10,7 @@ resource "aws_subnet" "subnet" {
   vpc_id     = aws_vpc.vpc.id
   cidr_block = "192.168.0.0/16"
 
-  map_public_ip_on_launch = true
+  map_public_ip_on_launch             = true
   private_dns_hostname_type_on_launch = "resource-name"
 }
 
