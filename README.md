@@ -21,7 +21,7 @@ tofu apply
 ```
 
 # Roadmap
-* Add CloudWatch Agent to instances
+* Cleanup code
+* Improve error handling
 * Remove repository owner hack
-* Implement our own JWT
 * Documentation
