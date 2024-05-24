@@ -26,6 +26,8 @@ jobs:
 
       - uses: actions/checkout@v4
 
+      - run: pip3 install cargo-lambda
+
       - run: cargo lambda build --release --arm64 --output-format zip
 
       - run: aws s3 cp target/lambda/github-actions-runner-aws/bootstrap.zip s3://drakon64-github-actions-runner-aws/bootstrap.zip --metadata sha256sum=$(sha256sum target/lambda/github-actions-runner-aws/bootstrap.zip | awk '{ print $1 }')
