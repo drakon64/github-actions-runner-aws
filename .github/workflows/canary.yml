@@ -6,6 +6,7 @@ on:
       - canary
     paths:
       - src/**.rs
+  workflow_dispatch:
 
 jobs:
   build:
