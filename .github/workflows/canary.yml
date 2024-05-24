@@ -30,4 +30,4 @@ jobs:
 
       - run: cargo lambda build --release --arm64 --output-format zip
 
-      - run: aws s3 cp target/lambda/github-actions-runner-aws/bootstrap.zip s3://drakon64-github-actions-runner-aws/bootstrap.zip --metadata sha256sum=$(sha256sum target/lambda/github-actions-runner-aws/canary.zip | awk '{ print $1 }')
+      - run: aws s3api put-object --body target/lambda/github-actions-runner-aws/bootstrap.zip --checksum-algorithm sha256 --bucket drakon64-github-actions-runner-aws --key canary.zip
