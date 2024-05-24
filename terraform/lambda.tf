@@ -63,7 +63,7 @@ resource "aws_lambda_function" "lambda" {
   runtime          = "provided.al2023"
   s3_bucket        = data.aws_s3_object.lambda.bucket
   s3_key           = data.aws_s3_object.lambda.key
-  source_code_hash = data.aws_s3_object.lambda.checksum_sha256
+  source_code_hash = data.aws_s3_object.lambda.metadata["sha256sum"]
   timeout          = 3
 }
 

@@ -1,0 +1,26 @@
+name: Build and deploy (Canary)
+
+on:
+  push:
+    branches:
+      - canary
+    paths:
+      - src/**.rs
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+
+    steps:
+      - run: sudo apt-get -y install awscli
+
+      - uses: aws-actions/configure-aws-credentials@v4
+        with:
+          aws-region: ${{ secrets.AWS_REGION }}
+          role-to-assume: ${{ secrets.AWS_IAM_ROLE }}
+
+      - uses: actions/checkout@v4
+
+      - run: cargo lambda build --release --arm64 --output-format zip
+
+      - run: aws s3 cp target/lambda/github-actions-runner-aws/bootstrap.zip s3://drakon64-github-actions-runner-aws/bootstrap.zip --metadata sha256sum=$(sha256sum target/lambda/github-actions-runner-aws/canary.zip | awk '{ print $1 }')
