@@ -7,7 +7,7 @@ use std::env;
 use std::time::{SystemTime, UNIX_EPOCH};
 
 #[derive(Deserialize)]
-struct RepositoryRegistrationToken {
+struct GitHubToken {
     token: String,
 }
 
@@ -16,11 +16,6 @@ pub(crate) struct Claims {
     iat: u64,
     exp: u64,
     iss: String,
-}
-
-#[derive(Deserialize)]
-struct InstallationAccessToken {
-    token: String,
 }
 
 pub(crate) fn create_registration_token_for_repository(
@@ -54,7 +49,7 @@ pub(crate) fn create_registration_token_for_repository(
         .headers(headers)
         .send()
         .unwrap()
-        .json::<RepositoryRegistrationToken>()
+        .json::<GitHubToken>()
         .unwrap()
         .token
 }
@@ -86,7 +81,7 @@ pub(crate) fn generate_installation_access_token(
         .headers(headers)
         .send()
         .unwrap()
-        .json::<InstallationAccessToken>()
+        .json::<GitHubToken>()
         .unwrap()
         .token
 }
