@@ -105,7 +105,7 @@ pub(crate) fn generate_json_web_token() -> String {
                 .replace("\\n", "\n")
                 .as_ref(),
         )
-        .unwrap(), // TODO: Get the private key from AWS Secrets Manager
+        .unwrap(),
     )
     .unwrap()
 }
