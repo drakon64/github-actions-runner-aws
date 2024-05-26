@@ -14,7 +14,7 @@ use std::env;
 
 async fn function_handler(event: LambdaEvent<ApiGatewayV2httpRequest>) -> Result<String, Error> {
     let body = event.payload.body.unwrap();
-    let webhook = serde_json::from_str::<Webhook>(&*body).unwrap();
+    let webhook = serde_json::from_str::<Webhook>(&*body)?;
 
     // TODO: Ugly hack, remove this in your own deployments
     if !(webhook.repository.owner.login == "drakon64"
@@ -26,21 +26,17 @@ async fn function_handler(event: LambdaEvent<ApiGatewayV2httpRequest>) -> Result
         )
     }
 
-    Hmac::<Sha256>::new_from_slice(env::var("SECRET_TOKEN").unwrap().as_bytes())
-        .unwrap()
+    Hmac::<Sha256>::new_from_slice(env::var("SECRET_TOKEN")?.as_bytes())?
         .chain_update(body.as_bytes())
         .verify_slice(
             hex::decode(
                 &event.payload.headers["X-Hub-Signature-256"]
-                    .to_str()
-                    .unwrap()
+                    .to_str()?
                     .strip_prefix("sha256=")
                     .unwrap(),
-            )
-            .unwrap()
+            )?
             .as_slice(),
-        )
-        .unwrap();
+        )?;
 
     if !webhook
         .workflow_job
@@ -53,8 +49,8 @@ async fn function_handler(event: LambdaEvent<ApiGatewayV2httpRequest>) -> Result
     let client = aws_sdk_ec2::Client::new(&aws_config::load_from_env().await);
 
     match webhook.action {
-        Action::Queued => Ok(run_instance(client, webhook).await.unwrap()),
-        Action::Completed => Ok(terminate_instance(client, webhook).await.unwrap()),
+        Action::Queued => Ok(run_instance(client, webhook).await?),
+        Action::Completed => Ok(terminate_instance(client, webhook).await?),
         _ => Ok("This webhooks runs only for `queued` and `completed` jobs".into()),
     }
 }
