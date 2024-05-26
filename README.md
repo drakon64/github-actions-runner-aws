@@ -20,5 +20,4 @@ tofu apply
 # Roadmap
 * Cleanup code
 * Improve error handling
-* Remove repository owner hack
 * Documentation

@@ -49,11 +49,12 @@ resource "aws_lambda_function" "lambda" {
 
   environment {
     variables = {
-      X64_LAUNCH_TEMPLATE_ID   = aws_launch_template.ubuntu["x86_64"].id
-      ARM64_LAUNCH_TEMPLATE_ID = aws_launch_template.ubuntu["arm64"].id
-      CLIENT_ID                = var.client_id
-      PRIVATE_KEY              = var.private_key
-      SECRET_TOKEN             = var.secret_token
+      X64_LAUNCH_TEMPLATE_ID    = aws_launch_template.ubuntu["x86_64"].id
+      ARM64_LAUNCH_TEMPLATE_ID  = aws_launch_template.ubuntu["arm64"].id
+      ALLOWED_REPOSITORY_OWNERS = var.allowed_repository_owners != null ? join(" ", var.allowed_repository_owners) : null
+      CLIENT_ID                 = var.client_id
+      PRIVATE_KEY               = var.private_key
+      SECRET_TOKEN              = var.secret_token
     }
   }
 

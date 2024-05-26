@@ -22,6 +22,11 @@ variable "suffix" {
   default = ""
 }
 
+variable "allowed_repository_owners" {
+  type    = list(string)
+  default = null
+}
+
 variable "client_id" {
   type      = string
   sensitive = true

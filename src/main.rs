@@ -16,14 +16,21 @@ async fn function_handler(event: LambdaEvent<ApiGatewayV2httpRequest>) -> Result
     let body = event.payload.body.unwrap();
     let webhook = serde_json::from_str::<Webhook>(&*body)?;
 
-    // TODO: Ugly hack, remove this in your own deployments
-    if !(webhook.repository.owner.login == "drakon64"
-        || webhook.repository.owner.login == "lilyinstarlight")
     {
-        panic!(
-            "Unauthorised repository owner: {}",
-            webhook.repository.owner.login
-        )
+        let allowed_repository_owners = env::var("ALLOWED_REPOSITORY_OWNERS");
+        if allowed_repository_owners.is_ok() {
+            if !allowed_repository_owners
+                .unwrap()
+                .split_whitespace()
+                .collect::<Vec<&str>>()
+                .contains(&&*webhook.repository.owner.login)
+            {
+                panic!(
+                    "Unauthorised repository owner: {}",
+                    webhook.repository.owner.login
+                )
+            }
+        }
     }
 
     Hmac::<Sha256>::new_from_slice(env::var("SECRET_TOKEN")?.as_bytes())?
