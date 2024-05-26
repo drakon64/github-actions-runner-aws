@@ -20,7 +20,7 @@ async fn function_handler(event: LambdaEvent<ApiGatewayV2httpRequest>) -> Result
         match env::var("ALLOWED_REPOSITORY_OWNERS") {
             Ok(allowed_repository_owners) => {
                 if !allowed_repository_owners
-                    .split_whitespace()
+                    .split(' ')
                     .collect::<Vec<&str>>()
                     .contains(&&*webhook.repository.owner.login)
                 {
