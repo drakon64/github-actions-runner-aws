@@ -17,19 +17,21 @@ async fn function_handler(event: LambdaEvent<ApiGatewayV2httpRequest>) -> Result
     let webhook = serde_json::from_str::<Webhook>(&*body)?;
 
     {
-        let allowed_repository_owners = env::var("ALLOWED_REPOSITORY_OWNERS");
-        if allowed_repository_owners.is_ok() {
-            if !allowed_repository_owners
-                .unwrap()
-                .split_whitespace()
-                .collect::<Vec<&str>>()
-                .contains(&&*webhook.repository.owner.login)
-            {
-                panic!(
-                    "Unauthorised repository owner: {}",
-                    webhook.repository.owner.login
-                )
+        match env::var("ALLOWED_REPOSITORY_OWNERS") {
+            Ok(allowed_repository_owners) => {
+                if !allowed_repository_owners
+                    .split_whitespace()
+                    .collect::<Vec<&str>>()
+                    .contains(&&*webhook.repository.owner.login)
+                {
+                    panic!(
+                        "Unauthorised repository owner: {}",
+                        webhook.repository.owner.login
+                    )
+                }
             }
+
+            Err(_) => {}
         }
     }
 
