@@ -44,9 +44,12 @@ swapon /dev/nvme1n1
 add-apt-repository ppa:ansible/ansible # https://github.com/ansible/ansible/issues/77624
 apt-get update
 apt-get -y install ansible-core awscli
-apt-get clean
 ansible-galaxy collection install amazon.aws community.general
-ansible-pull --checkout canary --url https://github.com/drakon64/github-actions-runner-aws.git --extra-vars 'url=https://github.com/{}' --extra-vars 'token={}' --extra-vars 'ebs_volume_size={}' ansible/runner.yml"
+ansible-pull --checkout canary --url https://github.com/drakon64/github-actions-runner-aws.git --extra-vars 'url=https://github.com/{}' --extra-vars 'token={}' --extra-vars 'ebs_volume_size={}' ansible/runner.yml
+
+apt-get -y --purge --autoremove remove ansible-core
+apt-get clean
+rm -rf /root/.ansible"
     , &repository_full_name, create_registration_token_for_repository(&repository_full_name, &webhook), volume_size));
 
     let run_instances = client
