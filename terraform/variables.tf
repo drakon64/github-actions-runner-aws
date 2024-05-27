@@ -23,8 +23,9 @@ variable "suffix" {
 }
 
 variable "allowed_repository_owners" {
-  type    = list(string)
-  default = null
+  type        = list(string)
+  default     = null
+  description = "Deprecated"
 }
 
 variable "client_id" {

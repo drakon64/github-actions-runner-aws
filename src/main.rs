@@ -29,6 +29,7 @@ async fn function_handler(event: LambdaEvent<ApiGatewayV2httpRequest>) -> Result
 
     let webhook = serde_json::from_str::<Webhook>(&*body)?;
 
+    // TODO: Deprecated
     {
         match env::var("ALLOWED_REPOSITORY_OWNERS") {
             Ok(allowed_repository_owners) => {
