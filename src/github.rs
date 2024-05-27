@@ -1,4 +1,3 @@
-use crate::webhook::Webhook;
 use jsonwebtoken::{Algorithm, EncodingKey, Header};
 use reqwest::blocking::Client;
 use reqwest::header::HeaderMap;
@@ -20,7 +19,7 @@ pub(crate) struct Claims {
 
 pub(crate) fn create_registration_token_for_repository(
     repository_full_name: &String,
-    webhook: &Webhook,
+    installation_id: u32,
 ) -> String {
     let http_client = Client::new();
 
@@ -30,7 +29,7 @@ pub(crate) fn create_registration_token_for_repository(
         "Authorization",
         format!(
             "Bearer {}",
-            generate_installation_access_token(&webhook, &http_client)
+            generate_installation_access_token(installation_id, &http_client)
         )
         .parse()
         .unwrap(),
@@ -55,7 +54,7 @@ pub(crate) fn create_registration_token_for_repository(
 }
 
 pub(crate) fn generate_installation_access_token(
-    webhook: &Webhook,
+    installation_id: u32,
     http_client: &Client,
 ) -> String {
     let mut headers = HeaderMap::new();
@@ -76,7 +75,7 @@ pub(crate) fn generate_installation_access_token(
     http_client
         .post(format!(
             "https://api.github.com/app/installations/{}/access_tokens",
-            webhook.installation.id
+            installation_id
         ))
         .headers(headers)
         .send()

@@ -50,7 +50,7 @@ ansible-pull --checkout canary --url https://github.com/drakon64/github-actions-
 apt-get -y --purge --autoremove remove ansible-core
 apt-get clean
 rm -rf /root/.ansible"
-    , &repository_full_name, create_registration_token_for_repository(&repository_full_name, &webhook), volume_size));
+    , webhook.repository.full_name, create_registration_token_for_repository(&webhook.repository.full_name, webhook.installation.id), volume_size));
 
     let run_instances = client
         .run_instances()
