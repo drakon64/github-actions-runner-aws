@@ -14,6 +14,19 @@ use std::env;
 
 async fn function_handler(event: LambdaEvent<ApiGatewayV2httpRequest>) -> Result<String, Error> {
     let body = event.payload.body.unwrap();
+
+    Hmac::<Sha256>::new_from_slice(env::var("SECRET_TOKEN")?.as_bytes())?
+        .chain_update(body.as_bytes())
+        .verify_slice(
+            hex::decode(
+                &event.payload.headers["X-Hub-Signature-256"]
+                    .to_str()?
+                    .strip_prefix("sha256=")
+                    .unwrap(),
+            )?
+            .as_slice(),
+        )?;
+
     let webhook = serde_json::from_str::<Webhook>(&*body)?;
 
     {
@@ -34,18 +47,6 @@ async fn function_handler(event: LambdaEvent<ApiGatewayV2httpRequest>) -> Result
             Err(_) => {}
         }
     }
-
-    Hmac::<Sha256>::new_from_slice(env::var("SECRET_TOKEN")?.as_bytes())?
-        .chain_update(body.as_bytes())
-        .verify_slice(
-            hex::decode(
-                &event.payload.headers["X-Hub-Signature-256"]
-                    .to_str()?
-                    .strip_prefix("sha256=")
-                    .unwrap(),
-            )?
-            .as_slice(),
-        )?;
 
     if !webhook
         .workflow_job
