@@ -32,7 +32,6 @@ pub(crate) async fn run_instance(client: Client, webhook: Webhook) -> Result<Str
         }
     }
 
-    // TODO: Get cloud-init to do this
     let user_data = BASE64_STANDARD.encode(format!("#!/bin/sh
 
 sysctl vm.swappiness=1
@@ -42,7 +41,10 @@ swapon /dev/nvme1n1
 add-apt-repository ppa:ansible/ansible # https://github.com/ansible/ansible/issues/77624
 apt-get update
 apt-get -y install ansible-core awscli
-ansible-galaxy collection install amazon.aws community.general
+
+echo 'runner ALL=NOPASSWD: ALL' > /etc/sudoers.d/github-actions-runner
+
+ansible-galaxy collection install amazon.aws
 ansible-pull --checkout canary --url https://github.com/drakon64/github-actions-runner-aws.git --extra-vars 'url=https://github.com/{}' --extra-vars 'token={}' --extra-vars 'ebs_volume_size={}' ansible/runner.yml
 
 apt-get -y --purge --autoremove remove ansible-core
