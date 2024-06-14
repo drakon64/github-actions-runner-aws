@@ -38,7 +38,6 @@ sysctl vm.swappiness=1
 mkswap /dev/nvme1n1
 swapon /dev/nvme1n1
 
-add-apt-repository ppa:ansible/ansible # https://github.com/ansible/ansible/issues/77624
 apt-get update
 apt-get -y install ansible-core awscli
 
