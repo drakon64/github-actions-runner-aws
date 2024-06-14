@@ -45,6 +45,9 @@ swapon /dev/nvme1n1
 apt-get update
 apt-get -y install ansible-core awscli
 
+adduser runner
+install -d -o runner -g runner /home/runner/actions-runner
+
 echo 'runner ALL=NOPASSWD: ALL' > /etc/sudoers.d/github-actions-runner
 
 ansible-galaxy collection install amazon.aws
