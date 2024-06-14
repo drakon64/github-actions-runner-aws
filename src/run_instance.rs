@@ -32,6 +32,10 @@ pub(crate) async fn run_instance(client: Client, webhook: Webhook) -> Result<Str
         }
     }
 
+    // TODO: Convert to base64 at compile time
+    let cloudwatch_config =
+        BASE64_STANDARD.encode(include_str!("../ansible/amazon-cloudwatch-agent.json"));
+
     let user_data = BASE64_STANDARD.encode(format!("#!/bin/sh
 
 sysctl vm.swappiness=1
@@ -46,10 +50,13 @@ echo 'runner ALL=NOPASSWD: ALL' > /etc/sudoers.d/github-actions-runner
 ansible-galaxy collection install amazon.aws
 ansible-pull --checkout canary --url https://github.com/drakon64/github-actions-runner-aws.git --extra-vars 'url=https://github.com/{}' --extra-vars 'token={}' --extra-vars 'ebs_volume_size={}' ansible/runner.yml
 
+echo {} | base64 -d > /opt/aws/amazon-cloudwatch-agent/etc/amazon-cloudwatch-agent.json
+systemctl restart amazon-cloudwatch-agent
+
 apt-get -y --purge --autoremove remove ansible-core
 apt-get clean
 rm -rf /root/.ansible"
-    , webhook.repository.full_name, create_registration_token_for_repository(&webhook.repository.full_name, webhook.installation.id), volume_size));
+    , webhook.repository.full_name, create_registration_token_for_repository(&webhook.repository.full_name, webhook.installation.id), volume_size, cloudwatch_config));
 
     let run_instances = client
         .run_instances()
