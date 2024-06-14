@@ -49,7 +49,7 @@ resource "aws_lambda_function" "lambda" {
 
   environment {
     variables = {
-      X64_LAUNCH_TEMPLATE_ID    = aws_launch_template.ubuntu["x86_64"].id
+      AMD64_LAUNCH_TEMPLATE_ID  = aws_launch_template.ubuntu["amd64"].id
       ARM64_LAUNCH_TEMPLATE_ID  = aws_launch_template.ubuntu["arm64"].id
       ALLOWED_REPOSITORY_OWNERS = var.allowed_repository_owners != null ? join(" ", var.allowed_repository_owners) : null
       CLIENT_ID                 = var.client_id

@@ -36,28 +36,13 @@ resource "aws_iam_instance_profile" "ec2" {
 }
 
 locals {
-  architectures = toset(["arm64", "x86_64"])
+  architectures = toset(["amd64", "arm64"])
 }
 
 data "aws_ami" "ubuntu" {
   filter {
     name   = "name"
     values = ["ubuntu/images/hvm-ssd/ubuntu-jammy-22.04-*-server-*"]
-  }
-
-  filter {
-    name   = "architecture"
-    values = [each.value]
-  }
-
-  filter {
-    name   = "root-device-type"
-    values = ["ebs"]
-  }
-
-  filter {
-    name   = "virtualization-type"
-    values = ["hvm"]
   }
 
   most_recent = true
