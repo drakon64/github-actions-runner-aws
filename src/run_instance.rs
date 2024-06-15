@@ -44,6 +44,9 @@ sysctl vm.swappiness=1
 mkswap /dev/nvme1n1
 swapon /dev/nvme1n1
 
+apt-get update
+apt-get -y install ansible-core awscli
+
 adduser runner
 install -d -o runner -g runner /home/runner/actions-runner
 echo 'ACTIONS_RUNNER_HOOK_JOB_STARTED=/home/runner/tag.sh' > /home/runner/actions-runner/.env
@@ -51,9 +54,6 @@ chown runner:runner /home/runner/actions-runner/.env
 chmod 0600 /home/runner/actions-runner/.env
 
 echo 'runner ALL=NOPASSWD: ALL' > /etc/sudoers.d/github-actions-runner
-
-apt-get update
-apt-get -y install ansible-core awscli
 
 ansible-galaxy collection install amazon.aws
 ansible-pull --checkout canary --url https://github.com/drakon64/github-actions-runner-aws.git --extra-vars 'url=https://github.com/{}' --extra-vars 'token={}' --extra-vars 'ebs_volume_size={}' ansible/runner.yml
