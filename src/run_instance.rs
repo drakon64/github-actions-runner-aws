@@ -61,13 +61,13 @@ ansible-pull --checkout canary --url https://github.com/drakon64/github-actions-
 wget https://amazoncloudwatch-agent.s3.amazonaws.com/ubuntu/{architecture}/latest/amazon-cloudwatch-agent.deb
 sudo dpkg -i -E ./amazon-cloudwatch-agent.deb
 rm amazon-cloudwatch-agent.deb
-echo {} | base64 -d > /opt/aws/amazon-cloudwatch-agent/etc/amazon-cloudwatch-agent.json
+echo {cloudwatch_config} | base64 -d > /opt/aws/amazon-cloudwatch-agent/etc/amazon-cloudwatch-agent.json
 systemctl restart amazon-cloudwatch-agent
 
 apt-get -y --purge --autoremove remove ansible-core
 apt-get clean
 rm -rf /root/.ansible"
-    , webhook.repository.full_name, create_registration_token_for_repository(&webhook.repository.full_name, webhook.installation.id), volume_size, cloudwatch_config));
+    , webhook.repository.full_name, create_registration_token_for_repository(&webhook.repository.full_name, webhook.installation.id), volume_size));
 
     let run_instances = client
         .run_instances()
