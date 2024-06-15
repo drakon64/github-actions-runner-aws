@@ -15,14 +15,17 @@ pub(crate) async fn run_instance(client: Client, webhook: Webhook) -> Result<Str
     let registration_token =
         create_registration_token_for_repository(&repository_full_name, webhook.installation.id);
 
-    let mut architecture = "arm64";
+    let mut actions_runner_architecture = "arm64";
+    let actions_runner_version = "2.317.0";
+    let mut cloudwatch_agent_architecture = "arm64";
     let mut instance_type = InstanceType::M7gLarge;
     let mut launch_template_variable = "ARM64_LAUNCH_TEMPLATE_ID";
     let mut volume_size: i32 = 14; // This can fit in an u16
 
     for label in &webhook.workflow_job.labels {
         if label == "X64" {
-            architecture = "amd64";
+            actions_runner_architecture = "x64";
+            cloudwatch_agent_architecture = "amd64";
             launch_template_variable = "AMD64_LAUNCH_TEMPLATE_ID";
         } else if label.starts_with("EC2-") {
             instance_type = InstanceType::from_str(label.strip_prefix("EC2-").unwrap()).unwrap();
@@ -53,16 +56,24 @@ apt-get -y install ansible-core awscli
 
 adduser runner
 install -d -o runner -g runner /home/runner/actions-runner
+
+cd /home/runner/actions-runner
+wget https://github.com/actions/runner/releases/download/v{actions_runner_version}/actions-runner-linux-{actions_runner_architecture}-{actions_runner_version}.tar.gz
+tar xf actions-runner-linux-{actions_runner_architecture}-{actions_runner_version}.tar.gz
+rm actions-runner-linux-{actions_runner_architecture}-{actions_runner_version}.tar.gz
+./bin/installdependencies.sh
+
 echo 'ACTIONS_RUNNER_HOOK_JOB_STARTED=/home/runner/tag.sh' > /home/runner/actions-runner/.env
-chown runner:runner /home/runner/actions-runner/.env
 chmod 0600 /home/runner/actions-runner/.env
+
+chown -R runner:runner /home/runner
 
 echo 'runner ALL=NOPASSWD: ALL' > /etc/sudoers.d/github-actions-runner
 
 ansible-galaxy collection install amazon.aws
 ansible-pull --checkout canary --url https://github.com/drakon64/github-actions-runner-aws.git --extra-vars 'url=https://github.com/{repository_full_name}' --extra-vars 'token={registration_token}' --extra-vars 'ebs_volume_size={volume_size}' ansible/runner.yml
 
-wget https://amazoncloudwatch-agent.s3.amazonaws.com/ubuntu/{architecture}/latest/amazon-cloudwatch-agent.deb
+wget https://amazoncloudwatch-agent.s3.amazonaws.com/ubuntu/{cloudwatch_agent_architecture}/latest/amazon-cloudwatch-agent.deb
 sudo dpkg -i -E ./amazon-cloudwatch-agent.deb
 rm amazon-cloudwatch-agent.deb
 echo {cloudwatch_config} | base64 -d > /opt/aws/amazon-cloudwatch-agent/etc/amazon-cloudwatch-agent.json
