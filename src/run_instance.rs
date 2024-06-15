@@ -11,12 +11,14 @@ use std::env;
 use std::str::FromStr;
 
 pub(crate) async fn run_instance(client: Client, webhook: Webhook) -> Result<String, Error> {
+    let mut architecture = "arm64";
     let mut instance_type = InstanceType::M7gLarge;
     let mut launch_template_variable = "ARM64_LAUNCH_TEMPLATE_ID";
     let mut volume_size: i32 = 14; // This can fit in an u16
 
     for label in &webhook.workflow_job.labels {
         if label == "X64" {
+            architecture = "amd64";
             launch_template_variable = "AMD64_LAUNCH_TEMPLATE_ID";
         } else if label.starts_with("EC2-") {
             instance_type = InstanceType::from_str(label.strip_prefix("EC2-").unwrap()).unwrap();
@@ -42,17 +44,20 @@ sysctl vm.swappiness=1
 mkswap /dev/nvme1n1
 swapon /dev/nvme1n1
 
-apt-get update
-apt-get -y install ansible-core awscli
-
 adduser runner
 install -d -o runner -g runner /home/runner/actions-runner
 
 echo 'runner ALL=NOPASSWD: ALL' > /etc/sudoers.d/github-actions-runner
 
+apt-get update
+apt-get -y install ansible-core awscli
+
 ansible-galaxy collection install amazon.aws
 ansible-pull --checkout canary --url https://github.com/drakon64/github-actions-runner-aws.git --extra-vars 'url=https://github.com/{}' --extra-vars 'token={}' --extra-vars 'ebs_volume_size={}' ansible/runner.yml
 
+wget https://amazoncloudwatch-agent.s3.amazonaws.com/ubuntu/{architecture}/latest/amazon-cloudwatch-agent.deb
+sudo dpkg -i -E ./amazon-cloudwatch-agent.deb
+rm amazon-cloudwatch-agent.deb
 echo {} | base64 -d > /opt/aws/amazon-cloudwatch-agent/etc/amazon-cloudwatch-agent.json
 systemctl restart amazon-cloudwatch-agent
 

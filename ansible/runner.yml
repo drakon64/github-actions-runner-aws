@@ -6,9 +6,6 @@
   tasks:
   - amazon.aws.ec2_metadata_facts:
 
-  - ansible.builtin.apt:
-      deb: https://amazoncloudwatch-agent.s3.amazonaws.com/ubuntu/{% if ansible_architecture == "x86_64" %}amd64{% else %}arm64{% endif %}/latest/amazon-cloudwatch-agent.deb
-
   # TODO: Avoid hard-coding version
   # TODO: Checksum
   - ansible.builtin.unarchive:
