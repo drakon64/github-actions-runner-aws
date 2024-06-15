@@ -11,6 +11,10 @@ use std::env;
 use std::str::FromStr;
 
 pub(crate) async fn run_instance(client: Client, webhook: Webhook) -> Result<String, Error> {
+    let repository_full_name = &webhook.repository.full_name;
+    let registration_token =
+        create_registration_token_for_repository(&repository_full_name, webhook.installation.id);
+
     let mut architecture = "arm64";
     let mut instance_type = InstanceType::M7gLarge;
     let mut launch_template_variable = "ARM64_LAUNCH_TEMPLATE_ID";
@@ -56,7 +60,7 @@ chmod 0600 /home/runner/actions-runner/.env
 echo 'runner ALL=NOPASSWD: ALL' > /etc/sudoers.d/github-actions-runner
 
 ansible-galaxy collection install amazon.aws
-ansible-pull --checkout canary --url https://github.com/drakon64/github-actions-runner-aws.git --extra-vars 'url=https://github.com/{}' --extra-vars 'token={}' --extra-vars 'ebs_volume_size={volume_size}' ansible/runner.yml
+ansible-pull --checkout canary --url https://github.com/drakon64/github-actions-runner-aws.git --extra-vars 'url=https://github.com/{repository_full_name}' --extra-vars 'token={registration_token}' --extra-vars 'ebs_volume_size={volume_size}' ansible/runner.yml
 
 wget https://amazoncloudwatch-agent.s3.amazonaws.com/ubuntu/{architecture}/latest/amazon-cloudwatch-agent.deb
 sudo dpkg -i -E ./amazon-cloudwatch-agent.deb
@@ -66,8 +70,7 @@ systemctl restart amazon-cloudwatch-agent
 
 apt-get -y --purge --autoremove remove ansible-core
 apt-get clean
-rm -rf /root/.ansible"
-    , webhook.repository.full_name, create_registration_token_for_repository(&webhook.repository.full_name, webhook.installation.id)));
+rm -rf /root/.ansible"));
 
     let run_instances = client
         .run_instances()
