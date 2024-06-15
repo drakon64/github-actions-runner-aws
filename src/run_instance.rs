@@ -46,6 +46,9 @@ swapon /dev/nvme1n1
 
 adduser runner
 install -d -o runner -g runner /home/runner/actions-runner
+echo 'ACTIONS_RUNNER_HOOK_JOB_STARTED=/home/runner/tag.sh' > /home/runner/actions-runner/.env
+chown runner:runner /home/runner/actions-runner/.env
+chmod 0600 /home/runner/actions-runner/.env
 
 echo 'runner ALL=NOPASSWD: ALL' > /etc/sudoers.d/github-actions-runner
 
