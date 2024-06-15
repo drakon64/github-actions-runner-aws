@@ -56,7 +56,7 @@ chmod 0600 /home/runner/actions-runner/.env
 echo 'runner ALL=NOPASSWD: ALL' > /etc/sudoers.d/github-actions-runner
 
 ansible-galaxy collection install amazon.aws
-ansible-pull --checkout canary --url https://github.com/drakon64/github-actions-runner-aws.git --extra-vars 'url=https://github.com/{}' --extra-vars 'token={}' --extra-vars 'ebs_volume_size={}' ansible/runner.yml
+ansible-pull --checkout canary --url https://github.com/drakon64/github-actions-runner-aws.git --extra-vars 'url=https://github.com/{}' --extra-vars 'token={}' --extra-vars 'ebs_volume_size={volume_size}' ansible/runner.yml
 
 wget https://amazoncloudwatch-agent.s3.amazonaws.com/ubuntu/{architecture}/latest/amazon-cloudwatch-agent.deb
 sudo dpkg -i -E ./amazon-cloudwatch-agent.deb
@@ -67,7 +67,7 @@ systemctl restart amazon-cloudwatch-agent
 apt-get -y --purge --autoremove remove ansible-core
 apt-get clean
 rm -rf /root/.ansible"
-    , webhook.repository.full_name, create_registration_token_for_repository(&webhook.repository.full_name, webhook.installation.id), volume_size));
+    , webhook.repository.full_name, create_registration_token_for_repository(&webhook.repository.full_name, webhook.installation.id)));
 
     let run_instances = client
         .run_instances()
