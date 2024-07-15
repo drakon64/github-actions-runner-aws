@@ -83,7 +83,7 @@ resource "aws_launch_template" "ubuntu" {
 
   network_interfaces {
     delete_on_termination = true
-    subnet_id             = aws_subnet.subnet.id
+    subnet_id             = aws_subnet.subnet[1].id # TODO: Set the subnet ID in Rust and try a random one
   }
 
   update_default_version = true
