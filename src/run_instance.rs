@@ -1,8 +1,9 @@
 use crate::github::create_registration_token_for_repository;
 use crate::webhook::Webhook;
 use aws_sdk_ec2::types::{
-    BlockDeviceMapping, EbsBlockDevice, InstanceType, LaunchTemplateSpecification, ResourceType,
-    Tag, TagSpecification, VolumeType,
+    BlockDeviceMapping, EbsBlockDevice, InstanceInterruptionBehavior, InstanceMarketOptionsRequest,
+    InstanceType, LaunchTemplateSpecification, MarketType, ResourceType, SpotInstanceType,
+    SpotMarketOptions, Tag, TagSpecification, VolumeType,
 };
 use aws_sdk_ec2::{Client, Error};
 use base64::prelude::BASE64_STANDARD;
@@ -16,6 +17,8 @@ pub(crate) async fn run_instance(client: Client, webhook: Webhook) -> Result<Str
     let mut instance_type = InstanceType::M7gLarge;
     let mut launch_template_variable = "ARM64_LAUNCH_TEMPLATE_ID";
     let mut volume_size: i32 = 14; // This can fit in an u16
+    let mut spot: Option<MarketType> = None;
+    let mut spot_options: Option<SpotMarketOptions> = None;
 
     for label in &webhook.workflow_job.labels {
         if label == "X64" {
@@ -31,6 +34,16 @@ pub(crate) async fn run_instance(client: Client, webhook: Webhook) -> Result<Str
                     .unwrap(),
             )
             .unwrap();
+        } else if label == "EC2-Spot" {
+            spot = Some(MarketType::Spot);
+            spot_options = Some(
+                SpotMarketOptions::builder()
+                    .set_instance_interruption_behavior(Some(
+                        InstanceInterruptionBehavior::Terminate,
+                    ))
+                    .set_spot_instance_type(Some(SpotInstanceType::OneTime))
+                    .build(),
+            );
         }
     }
 
@@ -80,6 +93,12 @@ ansible-pull --url https://github.com/drakon64/github-actions-runner-aws.git --e
                 ))
                 .build(),
         ]))
+        .set_instance_market_options(Some(
+            InstanceMarketOptionsRequest::builder()
+                .set_market_type(spot)
+                .set_spot_options(spot_options)
+                .build(),
+        ))
         .set_launch_template(Some(
             LaunchTemplateSpecification::builder()
                 .set_launch_template_id(Some(env::var(launch_template_variable).unwrap()))
