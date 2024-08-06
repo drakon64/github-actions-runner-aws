@@ -23,7 +23,7 @@ pub(crate) async fn run_instance(client: Client, webhook: Webhook) -> Result<Str
     for label in &webhook.workflow_job.labels {
         if label == "X64" {
             launch_template_variable = "X64_LAUNCH_TEMPLATE_ID";
-        } else if label.starts_with("EC2-") {
+        } else if label.starts_with("EC2-") && label != "EC2-Spot" {
             instance_type = InstanceType::from_str(label.strip_prefix("EC2-").unwrap()).unwrap();
         } else if label.starts_with("EBS-") && label.ends_with("GB") {
             volume_size = i32::from_str(
