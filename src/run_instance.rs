@@ -17,7 +17,8 @@ pub(crate) async fn run_instance(client: Client, webhook: Webhook) -> Result<Str
     let mut instance_type = InstanceType::M7gLarge;
     let mut launch_template_variable = "ARM64_LAUNCH_TEMPLATE_ID";
     let mut volume_size: i32 = 14; // This can fit in an u16
-    let mut spot: Option<MarketType> = None;
+    let mut spot = false;
+    let mut market_type: Option<MarketType> = None;
     let mut spot_options: Option<SpotMarketOptions> = None;
 
     for label in &webhook.workflow_job.labels {
@@ -35,7 +36,8 @@ pub(crate) async fn run_instance(client: Client, webhook: Webhook) -> Result<Str
             )
             .unwrap();
         } else if label == "EC2-Spot" {
-            spot = Some(MarketType::Spot);
+            spot = true;
+            market_type = Some(MarketType::Spot);
             spot_options = Some(
                 SpotMarketOptions::builder()
                     .set_instance_interruption_behavior(Some(
@@ -59,7 +61,7 @@ apt-get update
 apt-get -y install ansible-core awscli
 apt-get clean
 ansible-galaxy collection install amazon.aws community.general
-ansible-pull --url https://github.com/drakon64/github-actions-runner-aws.git --extra-vars 'url=https://github.com/{}' --extra-vars 'token={}' --extra-vars 'ebs_volume_size={}' ansible/runner.yml"
+ansible-pull --url https://github.com/drakon64/github-actions-runner-aws.git --extra-vars 'url=https://github.com/{}' --extra-vars 'token={}' --extra-vars 'spot={spot} --extra-vars 'ebs_volume_size={}' ansible/runner.yml"
     , &repository_full_name, create_registration_token_for_repository(&repository_full_name, &webhook), volume_size));
 
     let run_instances = client
@@ -95,7 +97,7 @@ ansible-pull --url https://github.com/drakon64/github-actions-runner-aws.git --e
         ]))
         .set_instance_market_options(Some(
             InstanceMarketOptionsRequest::builder()
-                .set_market_type(spot)
+                .set_market_type(market_type)
                 .set_spot_options(spot_options)
                 .build(),
         ))
