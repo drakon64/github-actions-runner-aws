@@ -6,20 +6,6 @@
   tasks:
   - amazon.aws.ec2_metadata_facts:
 
-  - ansible.builtin.apt:
-      deb: https://amazoncloudwatch-agent.s3.amazonaws.com/ubuntu/{% if ansible_architecture == "x86_64" %}amd64{% else %}arm64{% endif %}/latest/amazon-cloudwatch-agent.deb
-
-  - ansible.builtin.copy:
-      src: amazon-cloudwatch-agent.json
-      dest: /opt/aws/amazon-cloudwatch-agent/etc/amazon-cloudwatch-agent.json
-      owner: cwagent
-      group: cwagent
-      mode: 0644
-
-  - ansible.builtin.systemd_service:
-      name: amazon-cloudwatch-agent
-      state: restarted
-
   - ansible.builtin.user:
       name: runner
       create_home: yes
