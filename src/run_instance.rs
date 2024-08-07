@@ -50,9 +50,8 @@ pub(crate) async fn run_instance(client: Client, webhook: Webhook) -> Result<Str
         }
     }
 
-    let user_data = BASE64_STANDARD.encode(format!("#!/bin/sh
-
-curl -s https://raw.githubusercontent.com/drakon64/github-actions-runner-aws/canary/ansible/user-data.sh | sh
+    let user_data_script = include_str!("files/user-data.sh");
+    let user_data = BASE64_STANDARD.encode(format!("{user_data_script}
 
 ansible-pull --url https://github.com/drakon64/github-actions-runner-aws.git --checkout canary --extra-vars 'url=https://github.com/{repository_full_name}' --extra-vars 'token={repository_registration_token}' --extra-vars '{{ \"spot\": {spot} }}' --extra-vars 'ebs_volume_size={volume_size}' ansible/runner.yml"));
 
