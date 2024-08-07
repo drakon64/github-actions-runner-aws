@@ -36,13 +36,6 @@
       chdir: /home/runner/actions-runner
     become_user: runner
 
-  - ansible.builtin.copy:
-      dest: /home/runner/actions-runner/.env
-      content: ACTIONS_RUNNER_HOOK_JOB_STARTED=/home/runner/tag.sh
-      owner: runner
-      group: runner
-      mode: 0600
-
   # TODO: Run as a oneshot service
   - ansible.builtin.shell: ./run.sh &
     args:

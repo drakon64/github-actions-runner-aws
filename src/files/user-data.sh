@@ -8,6 +8,9 @@ adduser runner
 mkdir /home/runner/actions-runner
 chown runner:runner /home/runner/actions-runner
 
+echo "ACTIONS_RUNNER_HOOK_JOB_STARTED=/home/runner/tag.sh" > /home/runner/actions-runner/.env
+chown runner:runner /home/runner/actions-runner/.env
+
 mkdir -p /etc/apt/keyrings/
 wget -q -O - https://apt.grafana.com/gpg.key | gpg --dearmor > /etc/apt/keyrings/grafana.gpg
 echo "deb [signed-by=/etc/apt/keyrings/grafana.gpg] https://apt.grafana.com stable main" > /etc/apt/sources.list.d/grafana.list
