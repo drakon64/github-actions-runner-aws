@@ -37,6 +37,6 @@ add-apt-repository ppa:ansible/ansible # https://github.com/ansible/ansible/issu
 apt-get update
 apt-get -y install ansible-core awscli alloy
 apt-get clean
-ansible-galaxy collection install amazon.aws community.general
+ansible-galaxy collection install community.general
 ansible-pull --url https://github.com/drakon64/github-actions-runner-aws.git --checkout canary --extra-vars 'url=https://github.com/{repository_full_name}' --extra-vars 'token={repository_registration_token}' --extra-vars '{{ \"spot\": {spot} }}' --extra-vars 'ebs_volume_size={volume_size}' ansible/runner.yml"))
 }
