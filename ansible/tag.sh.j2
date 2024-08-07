@@ -1,3 +1,0 @@
-#!/bin/sh
-
-aws ec2 create-tags --region {{ ansible_ec2_placement_region }} --resources {{ ansible_ec2_instance_id }} --tags Key=Name,Value="${GITHUB_REPOSITORY}/${GITHUB_RUN_ID}/${GITHUB_RUN_NUMBER}/${GITHUB_RUN_ATTEMPT}/${GITHUB_JOB}"
