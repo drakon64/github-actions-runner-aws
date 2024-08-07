@@ -50,22 +50,10 @@ pub(crate) async fn run_instance(client: Client, webhook: Webhook) -> Result<Str
         }
     }
 
-    // TODO: Get cloud-init to do this
     let user_data = BASE64_STANDARD.encode(format!("#!/bin/sh
 
-sysctl vm.swappiness=1
-mkswap /dev/nvme1n1
-swapon /dev/nvme1n1
+curl -s https://raw.githubusercontent.com/drakon64/github-actions-runner-aws/canary/ansible/user-data.sh | sh
 
-mkdir -p /etc/apt/keyrings/
-wget -q -O - https://apt.grafana.com/gpg.key | gpg --dearmor > /etc/apt/keyrings/grafana.gpg
-echo 'deb [signed-by=/etc/apt/keyrings/grafana.gpg] https://apt.grafana.com stable main' > /etc/apt/sources.list.d/grafana.list
-
-add-apt-repository ppa:ansible/ansible # https://github.com/ansible/ansible/issues/77624
-apt-get update
-apt-get -y install ansible-core awscli alloy
-apt-get clean
-ansible-galaxy collection install amazon.aws community.general
 ansible-pull --url https://github.com/drakon64/github-actions-runner-aws.git --checkout canary --extra-vars 'url=https://github.com/{repository_full_name}' --extra-vars 'token={repository_registration_token}' --extra-vars '{{ \"spot\": {spot} }}' --extra-vars 'ebs_volume_size={volume_size}' ansible/runner.yml"));
 
     let run_instances = client
