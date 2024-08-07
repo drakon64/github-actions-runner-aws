@@ -13,7 +13,8 @@ use std::str::FromStr;
 
 pub(crate) async fn run_instance(client: Client, webhook: Webhook) -> Result<String, Error> {
     let repository_full_name = &webhook.repository.full_name;
-    let repository_registration_token = create_registration_token_for_repository(&repository_full_name, &webhook);
+    let repository_registration_token =
+        create_registration_token_for_repository(&repository_full_name, &webhook);
 
     let mut instance_type = InstanceType::M7gLarge;
     let mut launch_template_variable = "ARM64_LAUNCH_TEMPLATE_ID";
@@ -52,7 +53,6 @@ pub(crate) async fn run_instance(client: Client, webhook: Webhook) -> Result<Str
 
     let user_data_script = include_str!("files/user-data.sh");
     let user_data = BASE64_STANDARD.encode(format!("{user_data_script}
-
 ansible-pull --url https://github.com/drakon64/github-actions-runner-aws.git --checkout canary --extra-vars 'url=https://github.com/{repository_full_name}' --extra-vars 'token={repository_registration_token}' --extra-vars '{{ \"spot\": {spot} }}' --extra-vars 'ebs_volume_size={volume_size}' ansible/runner.yml"));
 
     let run_instances = client
