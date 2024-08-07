@@ -10,8 +10,6 @@ use std::env;
 use std::str::FromStr;
 
 pub(crate) async fn run_instance(client: Client, webhook: Webhook) -> Result<String, Error> {
-    let repository_full_name = &webhook.repository.full_name;
-
     let mut instance_type = InstanceType::M7gLarge;
     let mut launch_template_variable = "ARM64_LAUNCH_TEMPLATE_ID";
     let mut volume_size: i32 = 14; // This can fit in an u16
@@ -96,11 +94,11 @@ pub(crate) async fn run_instance(client: Client, webhook: Webhook) -> Result<Str
             .set_tags(Some(vec![
                 Tag::builder()
                     .set_key(Some("Name".into()))
-                    .set_value(Some(repository_full_name.clone()))
+                    .set_value(Some(webhook.repository.full_name.clone()))
                     .build(),
                 Tag::builder()
                     .set_key(Some("GitHubActionsRepository".into()))
-                    .set_value(Some(repository_full_name.clone()))
+                    .set_value(Some(webhook.repository.full_name.clone()))
                     .build(),
             ]))
             .build()]))
