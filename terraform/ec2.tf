@@ -75,10 +75,6 @@ resource "aws_launch_template" "ubuntu" {
 
   image_id = data.aws_ami.ubuntu[each.value].id
 
-  monitoring {
-    enabled = true
-  }
-
   name = "${var.prefix}GitHubActionsRunner${var.suffix}-${each.value}"
 
   network_interfaces {
