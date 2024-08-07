@@ -1,4 +1,4 @@
-use crate::github::create_registration_token_for_repository;
+use crate::user_data::create_user_data;
 use crate::webhook::Webhook;
 use aws_sdk_ec2::types::{
     BlockDeviceMapping, EbsBlockDevice, InstanceInterruptionBehavior, InstanceMarketOptionsRequest,
@@ -6,15 +6,11 @@ use aws_sdk_ec2::types::{
     SpotMarketOptions, Tag, TagSpecification, VolumeType,
 };
 use aws_sdk_ec2::{Client, Error};
-use base64::prelude::BASE64_STANDARD;
-use base64::Engine;
 use std::env;
 use std::str::FromStr;
 
 pub(crate) async fn run_instance(client: Client, webhook: Webhook) -> Result<String, Error> {
     let repository_full_name = &webhook.repository.full_name;
-    let repository_registration_token =
-        create_registration_token_for_repository(&repository_full_name, &webhook);
 
     let mut instance_type = InstanceType::M7gLarge;
     let mut launch_template_variable = "ARM64_LAUNCH_TEMPLATE_ID";
@@ -51,9 +47,7 @@ pub(crate) async fn run_instance(client: Client, webhook: Webhook) -> Result<Str
         }
     }
 
-    let user_data_script = include_str!("files/user-data.sh");
-    let user_data = BASE64_STANDARD.encode(format!("{user_data_script}
-ansible-pull --url https://github.com/drakon64/github-actions-runner-aws.git --checkout canary --extra-vars 'url=https://github.com/{repository_full_name}' --extra-vars 'token={repository_registration_token}' --extra-vars '{{ \"spot\": {spot} }}' --extra-vars 'ebs_volume_size={volume_size}' ansible/runner.yml"));
+    let user_data = create_user_data(&webhook, spot, &volume_size);
 
     let run_instances = client
         .run_instances()

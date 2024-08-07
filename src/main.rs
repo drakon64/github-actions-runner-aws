@@ -1,6 +1,7 @@
 mod github;
 mod run_instance;
 mod terminate_instance;
+mod user_data;
 mod webhook;
 
 use crate::run_instance::run_instance;

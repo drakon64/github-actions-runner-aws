@@ -23,10 +23,7 @@ struct InstallationAccessToken {
     token: String,
 }
 
-pub(crate) fn create_registration_token_for_repository(
-    repository_full_name: &String,
-    webhook: &Webhook,
-) -> String {
+pub(crate) fn create_registration_token_for_repository(webhook: &Webhook) -> String {
     let http_client = Client::new();
 
     let mut headers = HeaderMap::new();
@@ -49,7 +46,7 @@ pub(crate) fn create_registration_token_for_repository(
     http_client
         .post(format!(
             "https://api.github.com/repos/{}/actions/runners/registration-token",
-            repository_full_name
+            webhook.repository.full_name
         ))
         .headers(headers)
         .send()
