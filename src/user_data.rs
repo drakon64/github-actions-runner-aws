@@ -4,7 +4,12 @@ use base64::prelude::BASE64_STANDARD;
 use base64::Engine;
 use std::env;
 
-pub(crate) fn create_user_data(webhook: &Webhook, spot: bool, volume_size: &i32) -> String {
+pub(crate) fn create_user_data(
+    webhook: &Webhook,
+    spot: bool,
+    volume_size: &i32,
+    swap_volume_size: &i32,
+) -> String {
     let repository_full_name = &webhook.repository.full_name;
     let repository_registration_token = create_registration_token_for_repository(&webhook);
 
@@ -38,7 +43,7 @@ apt-get update
 apt-get -y install ansible-core awscli alloy
 apt-get clean
 ansible-galaxy collection install community.general
-ansible-pull --url https://github.com/drakon64/github-actions-runner-aws.git --checkout canary --extra-vars 'url=https://github.com/{repository_full_name}' --extra-vars 'token={repository_registration_token}' --extra-vars '{{ \"spot\": {spot} }}' --extra-vars 'ebs_volume_size={volume_size}' ansible/runner.yml"));
+ansible-pull --url https://github.com/drakon64/github-actions-runner-aws.git --checkout canary --extra-vars 'url=https://github.com/{repository_full_name}' --extra-vars 'token={repository_registration_token}' --extra-vars '{{ \"spot\": {spot} }}' --extra-vars 'ebs_volume_size={volume_size}' --extra-vars 'swap_volume_size={swap_volume_size}' ansible/runner.yml"));
 
     // Temp
     unsafe {

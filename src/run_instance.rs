@@ -55,7 +55,7 @@ pub(crate) async fn run_instance(client: Client, webhook: Webhook) -> Result<Str
         }
     }
 
-    let user_data = create_user_data(&webhook, spot, &volume_size);
+    let user_data = create_user_data(&webhook, spot, &volume_size, &swap_volume_size);
 
     let run_instances = client
         .run_instances()

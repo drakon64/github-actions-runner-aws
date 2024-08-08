@@ -22,7 +22,7 @@
     args:
       chdir: /home/runner/actions-runner
 
-  - ansible.builtin.command: ./config.sh --url {{ url }} --token {{ token }} --ephemeral --disableupdate --labels drakon64/github-actions-runner-aws,EC2-{{ ansible_ec2_instance_type }}{% if spot %},EC2-Spot{% endif %},EBS-{{ ebs_volume_size }}GB
+  - ansible.builtin.command: ./config.sh --url {{ url }} --token {{ token }} --ephemeral --disableupdate --labels drakon64/github-actions-runner-aws,EC2-{{ ansible_ec2_instance_type }}{% if spot %},EC2-Spot{% endif %},EBS-{{ ebs_volume_size }}GB,EBS-{{ swap_volume_size }}GB-Swap
     args:
       chdir: /home/runner/actions-runner
     become_user: runner
