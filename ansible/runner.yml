@@ -4,6 +4,8 @@
   connection: local
   become: yes
   tasks:
+  - amazon.aws.ec2_metadata_facts:
+
   - community.general.sudoers:
       name: github-actions-runner
       user: runner
