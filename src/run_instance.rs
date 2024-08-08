@@ -13,6 +13,7 @@ pub(crate) async fn run_instance(client: Client, webhook: Webhook) -> Result<Str
     let mut instance_type = InstanceType::M7gLarge;
     let mut launch_template_variable = "ARM64_LAUNCH_TEMPLATE_ID";
     let mut volume_size: i32 = 14; // This can fit in an u16
+    let mut swap_volume_size: i32 = 16; // This can fit in an u16
     let mut spot = false;
     let mut market_type: Option<MarketType> = None;
     let mut spot_options: Option<SpotMarketOptions> = None;
@@ -28,6 +29,15 @@ pub(crate) async fn run_instance(client: Client, webhook: Webhook) -> Result<Str
                     .strip_prefix("EBS-")
                     .unwrap()
                     .strip_suffix("GB")
+                    .unwrap(),
+            )
+            .unwrap();
+        } else if label.starts_with("EBS-") && label.ends_with("GB-Swap") {
+            swap_volume_size = i32::from_str(
+                label
+                    .strip_prefix("EBS-")
+                    .unwrap()
+                    .strip_suffix("GB-Swap")
                     .unwrap(),
             )
             .unwrap();
@@ -72,7 +82,7 @@ pub(crate) async fn run_instance(client: Client, webhook: Webhook) -> Result<Str
                         .set_delete_on_termination(Some(true))
                         .set_iops(Some(3000))
                         .set_throughput(Some(128))
-                        .set_volume_size(Some(16))
+                        .set_volume_size(Some(swap_volume_size))
                         .set_volume_type(Some(VolumeType::Gp3))
                         .build(),
                 ))
