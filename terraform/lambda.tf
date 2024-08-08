@@ -54,6 +54,8 @@ resource "aws_lambda_function" "lambda" {
       CLIENT_ID                = var.client_id
       PRIVATE_KEY              = var.private_key
       SECRET_TOKEN             = var.secret_token
+      GRAFANA_CLOUD_STACK_NAME = var.grafana_cloud_stack_name
+      GRAFANA_CLOUD_TOKEN      = var.grafana_cloud_token
     }
   }
 

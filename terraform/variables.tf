@@ -36,3 +36,13 @@ variable "secret_token" {
   type      = string
   sensitive = true
 }
+
+variable "grafana_cloud_stack_name" {
+  type      = string
+  sensitive = true
+}
+
+variable "grafana_cloud_token" {
+  type      = string
+  sensitive = true
+}
