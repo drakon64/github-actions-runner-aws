@@ -23,7 +23,7 @@ pub(crate) fn create_user_data(
 
 aws ec2 create-tags --region {aws_region} --resources \"$(curl -H \"X-aws-ec2-metadata-token: $(curl -X PUT http://169.254.169.254/latest/api/token -H 'X-aws-ec2-metadata-token-ttl-seconds: 21600')\" http://169.254.169.254/latest/meta-data/instance-id/)\" --tags Key=Name,Value=\"${{GITHUB_REPOSITORY}}/${{GITHUB_WORKFLOW}}/${{GITHUB_RUN_ID}}/${{GITHUB_RUN_ATTEMPT}}\""));
 
-    let user_data = BASE64_STANDARD.encode(format!("#!/bin/sh
+    BASE64_STANDARD.encode(format!("#!/bin/sh
 
 sysctl vm.swappiness=1
 mkswap /dev/nvme1n1
@@ -53,7 +53,5 @@ chown runner:runner /home/runner/actions-runner/.env
 echo '{tag_script}' | base64 -d > /home/runner/tag.sh
 chown runner:runner /home/runner/tag.sh
 
-ansible-pull --url https://github.com/drakon64/github-actions-runner-aws.git --checkout canary --extra-vars 'url=https://github.com/{repository_full_name}' --extra-vars 'token={repository_registration_token}' --extra-vars 'instance_type={instance_type}' --extra-vars '{{ \"spot\": {spot} }}' --extra-vars 'ebs_volume_size={volume_size}' --extra-vars 'swap_volume_size={swap_volume_size}' ansible/runner.yml"));
-
-    user_data
+ansible-pull --url https://github.com/drakon64/github-actions-runner-aws.git --checkout canary --extra-vars 'url=https://github.com/{repository_full_name}' --extra-vars 'token={repository_registration_token}' --extra-vars 'instance_type={instance_type}' --extra-vars '{{ \"spot\": {spot} }}' --extra-vars 'ebs_volume_size={volume_size}' --extra-vars 'swap_volume_size={swap_volume_size}' ansible/runner.yml"))
 }
