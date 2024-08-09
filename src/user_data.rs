@@ -32,8 +32,6 @@ swapon /dev/nvme1n1
 mkdir -p /etc/apt/keyrings/
 curl https://apt.grafana.com/gpg.key | gpg --dearmor > /etc/apt/keyrings/grafana.gpg
 echo 'deb [signed-by=/etc/apt/keyrings/grafana.gpg] https://apt.grafana.com stable main' > /etc/apt/sources.list.d/grafana.list
-
-add-apt-repository ppa:ansible/ansible # https://github.com/ansible/ansible/issues/77624
 apt-get update
 apt-get -y install alloy awscli ansible-core
 apt-get clean
@@ -45,7 +43,7 @@ GRAFANA_CLOUD_TOKEN=\"{grafana_cloud_token}\"
 GITHUB_REPOSITORY=\"{repository_full_name}\"\" >> /etc/default/alloy
 systemctl restart alloy
 
-adduser runner
+useradd -mG sudo runner
 mkdir /home/runner/actions-runner
 chown runner:runner /home/runner/actions-runner
 
@@ -55,7 +53,6 @@ chown runner:runner /home/runner/actions-runner/.env
 echo '{tag_script}' | base64 -d > /home/runner/tag.sh
 chown runner:runner /home/runner/tag.sh
 
-ansible-galaxy collection install community.general
 ansible-pull --url https://github.com/drakon64/github-actions-runner-aws.git --checkout canary --extra-vars 'url=https://github.com/{repository_full_name}' --extra-vars 'token={repository_registration_token}' --extra-vars 'instance_type={instance_type}' --extra-vars '{{ \"spot\": {spot} }}' --extra-vars 'ebs_volume_size={volume_size}' --extra-vars 'swap_volume_size={swap_volume_size}' ansible/runner.yml"));
 
     user_data

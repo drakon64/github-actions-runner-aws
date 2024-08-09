@@ -4,11 +4,6 @@
   connection: local
   become: yes
   tasks:
-  - community.general.sudoers:
-      name: github-actions-runner
-      user: runner
-      commands: ALL
-
   # TODO: Avoid hard-coding version
   # TODO: Checksum
   - ansible.builtin.unarchive:
