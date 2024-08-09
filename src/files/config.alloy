@@ -10,10 +10,21 @@ grafana_cloud.stack "receivers" {
   token = env("GRAFANA_CLOUD_TOKEN")
 }
 
+prometheus.relabel "github_repository" {
+  forward_to = [
+    grafana_cloud.stack.receivers.metrics,
+  ]
+
+  rule {
+    target_label = "github_repository"
+    replacement  = env("GITHUB_REPOSITORY")
+  }
+}
+
 prometheus.scrape "linux_node" {
   targets = prometheus.exporter.unix.node.targets
   forward_to = [
-    grafana_cloud.stack.receivers.metrics,
+    prometheus.relabel.github_repository.receiver,
   ]
 }
 
@@ -52,5 +63,6 @@ loki.source.journal "read" {
   relabel_rules = loki.relabel.journal.rules
   labels = {
     "job" = "integrations/node_exporter",
+    "github_repository" = env("GITHUB_REPOSITORY"),
   }
 }

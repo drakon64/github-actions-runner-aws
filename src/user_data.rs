@@ -20,7 +20,7 @@ pub(crate) fn create_user_data(
     let aws_region = env::var("AWS_REGION").unwrap();
     let tag_script = BASE64_STANDARD.encode(format!("#!/bin/sh
 
-aws ec2 create-tags --region {aws_region} --resources $(curl -H \"X-aws-ec2-metadata-token: $(curl -X PUT http://169.254.169.254/latest/api/token -H 'X-aws-ec2-metadata-token-ttl-seconds: 21600')\" http://169.254.169.254/latest/meta-data/instance-id/) --tags Key=Name,Value=\"${{GITHUB_REPOSITORY}}/${{GITHUB_RUN_ID}}/${{GITHUB_RUN_NUMBER}}/${{GITHUB_RUN_ATTEMPT}}/${{GITHUB_JOB}}\""));
+aws ec2 create-tags --region {aws_region} --resources \"$(curl -H \"X-aws-ec2-metadata-token: $(curl -X PUT http://169.254.169.254/latest/api/token -H 'X-aws-ec2-metadata-token-ttl-seconds: 21600')\" http://169.254.169.254/latest/meta-data/instance-id/)\" --tags Key=Name,Value=\"${{GITHUB_REPOSITORY}}/${{GITHUB_WORKFLOW}}/${{GITHUB_RUN_ID}}/${{GITHUB_RUN_ATTEMPT}}\""));
 
     let user_data = BASE64_STANDARD.encode(format!("#!/bin/sh
 
@@ -40,7 +40,8 @@ apt-get clean
 echo '{alloy_config}' | base64 -d > /etc/alloy/config.alloy
 echo \"
 GRAFANA_CLOUD_STACK_NAME=\"{grafana_cloud_stack_name}\"
-GRAFANA_CLOUD_TOKEN=\"{grafana_cloud_token}\"\" >> /etc/default/alloy
+GRAFANA_CLOUD_TOKEN=\"{grafana_cloud_token}\"
+GITHUB_REPOSITORY=\"{repository_full_name}\"\" >> /etc/default/alloy
 systemctl restart alloy
 
 adduser runner
