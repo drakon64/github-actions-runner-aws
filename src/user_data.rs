@@ -6,6 +6,7 @@ use std::env;
 
 pub(crate) fn create_user_data(
     webhook: &Webhook,
+    instance_type: &str,
     spot: bool,
     volume_size: &i32,
     swap_volume_size: &i32,
@@ -54,8 +55,8 @@ chown runner:runner /home/runner/actions-runner/.env
 echo '{tag_script}' | base64 -d > /home/runner/tag.sh
 chown runner:runner /home/runner/tag.sh
 
-ansible-galaxy collection install amazon.aws community.general
-ansible-pull --url https://github.com/drakon64/github-actions-runner-aws.git --extra-vars 'url=https://github.com/{repository_full_name}' --extra-vars 'token={repository_registration_token}' --extra-vars '{{ \"spot\": {spot} }}' --extra-vars 'ebs_volume_size={volume_size}' --extra-vars 'swap_volume_size={swap_volume_size}' ansible/runner.yml"));
+ansible-galaxy collection install community.general
+ansible-pull --url https://github.com/drakon64/github-actions-runner-aws.git --checkout canary --extra-vars 'url=https://github.com/{repository_full_name}' --extra-vars 'token={repository_registration_token}' --extra-vars 'instance_type={instance_type}' --extra-vars '{{ \"spot\": {spot} }}' --extra-vars 'ebs_volume_size={volume_size}' --extra-vars 'swap_volume_size={swap_volume_size}' ansible/runner.yml"));
 
     user_data
 }

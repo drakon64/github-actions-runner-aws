@@ -10,7 +10,7 @@ use std::env;
 use std::str::FromStr;
 
 pub(crate) async fn run_instance(client: Client, webhook: Webhook) -> Result<String, Error> {
-    let mut instance_type = InstanceType::M7gLarge;
+    let mut instance_type = "m7g.large";
     let mut launch_template_variable = "ARM64_LAUNCH_TEMPLATE_ID";
     let mut volume_size: i32 = 14; // This can fit in an u16
     let mut swap_volume_size: i32 = 16; // This can fit in an u16
@@ -22,7 +22,7 @@ pub(crate) async fn run_instance(client: Client, webhook: Webhook) -> Result<Str
         if label == "X64" {
             launch_template_variable = "X64_LAUNCH_TEMPLATE_ID";
         } else if label.starts_with("EC2-") && label != "EC2-Spot" {
-            instance_type = InstanceType::from_str(label.strip_prefix("EC2-").unwrap()).unwrap();
+            instance_type = label.strip_prefix("EC2-").unwrap();
         } else if label.starts_with("EBS-") && label.ends_with("GB") {
             volume_size = i32::from_str(
                 label
@@ -55,11 +55,17 @@ pub(crate) async fn run_instance(client: Client, webhook: Webhook) -> Result<Str
         }
     }
 
-    let user_data = create_user_data(&webhook, spot, &volume_size, &swap_volume_size);
+    let user_data = create_user_data(
+        &webhook,
+        instance_type,
+        spot,
+        &volume_size,
+        &swap_volume_size,
+    );
 
     let run_instances = client
         .run_instances()
-        .instance_type(instance_type)
+        .instance_type(InstanceType::from_str(instance_type).unwrap())
         .max_count(1)
         .min_count(1)
         .set_block_device_mappings(Some(vec![
