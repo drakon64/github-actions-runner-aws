@@ -31,3 +31,5 @@ jobs:
       - run: cargo lambda build --release --arm64 --output-format zip
 
       - run: aws s3api put-object --body target/lambda/github-actions-runner-aws/bootstrap.zip --checksum-algorithm sha256 --bucket drakon64-github-actions-runner-aws-artifacts --key canary.zip
+
+      - run: aws lambda update-function-code --function-name GitHubActionsRunnerCanary --zip-file fileb://target/lambda/github-actions-runner-aws/bootstrap.zip
