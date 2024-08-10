@@ -27,17 +27,6 @@ aws ec2 create-tags --region {aws_region} --resources \"$(curl -H \"X-aws-ec2-me
 
     BASE64_STANDARD.encode(format!("#!/bin/sh -e
 
-sysctl vm.swappiness=1
-
-if [ ! $(fdisk -l /dev/nvme1n1 | grep -q \"Disklabel type\") ] ; then
-    SWAP='/dev/nvme1n1'
-else
-    SWAP='/dev/nvme0n1'
-fi
-
-mkswap $SWAP
-swapon $SWAP
-
 mkdir -p /etc/apt/keyrings/
 curl https://apt.grafana.com/gpg.key | gpg --dearmor > /etc/apt/keyrings/grafana.gpg
 echo 'deb [signed-by=/etc/apt/keyrings/grafana.gpg] https://apt.grafana.com stable main' > /etc/apt/sources.list.d/grafana.list
@@ -51,6 +40,17 @@ GRAFANA_CLOUD_STACK_NAME=\"{grafana_cloud_stack_name}\"
 GRAFANA_CLOUD_TOKEN=\"{grafana_cloud_token}\"
 GITHUB_REPOSITORY=\"{repository_full_name}\"\" >> /etc/default/alloy
 systemctl restart alloy
+
+sysctl vm.swappiness=1
+
+if [ ! $(fdisk -l /dev/nvme1n1 | grep -q \"Disklabel type\") ] ; then
+    SWAP='/dev/nvme1n1'
+else
+    SWAP='/dev/nvme0n1'
+fi
+
+mkswap $SWAP
+swapon $SWAP
 
 adduser runner
 echo '{sudoers}' | base64 -d > /etc/sudoers.d/10-runner
