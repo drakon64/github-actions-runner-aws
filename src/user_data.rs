@@ -19,11 +19,11 @@ pub(crate) fn create_user_data(
     let grafana_cloud_token = env::var("GRAFANA_CLOUD_TOKEN").unwrap();
 
     let aws_region = env::var("AWS_REGION").unwrap();
-    let tag_script = BASE64_STANDARD.encode(format!("#!/bin/sh
+    let tag_script = BASE64_STANDARD.encode(format!("#!/bin/sh -e
 
 aws ec2 create-tags --region {aws_region} --resources \"$(curl -H \"X-aws-ec2-metadata-token: $(curl -X PUT http://169.254.169.254/latest/api/token -H 'X-aws-ec2-metadata-token-ttl-seconds: 21600')\" http://169.254.169.254/latest/meta-data/instance-id/)\" --tags Key=Name,Value=\"${{GITHUB_REPOSITORY}}/${{GITHUB_WORKFLOW}}/${{GITHUB_RUN_ID}}/${{GITHUB_RUN_ATTEMPT}}\""));
 
-    BASE64_STANDARD.encode(format!("#!/bin/sh
+    BASE64_STANDARD.encode(format!("#!/bin/sh -e
 
 sysctl vm.swappiness=1
 mkswap /dev/nvme1n1
