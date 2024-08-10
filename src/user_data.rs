@@ -28,8 +28,15 @@ aws ec2 create-tags --region {aws_region} --resources \"$(curl -H \"X-aws-ec2-me
     BASE64_STANDARD.encode(format!("#!/bin/sh -e
 
 sysctl vm.swappiness=1
-mkswap /dev/nvme1n1
-swapon /dev/nvme1n1
+
+if [ ! $(fdisk -l /dev/nvme1n1 | grep -q \"Disklabel type\") ] ; then
+    SWAP='/dev/nvme1n1'
+else
+    SWAP='/dev/nvme0n1'
+fi
+
+mkswap $SWAP
+swapon $SWAP
 
 mkdir -p /etc/apt/keyrings/
 curl https://apt.grafana.com/gpg.key | gpg --dearmor > /etc/apt/keyrings/grafana.gpg
