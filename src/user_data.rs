@@ -47,8 +47,9 @@ else
     SWAP='/dev/nvme0n1'
 fi
 
-mkswap $SWAP
-swapon $SWAP
+# TODO: Sometimes we cannot create a swap partition due to the disk being busy. Fix this.
+mkswap $SWAP || true
+swapon $SWAP || true
 
 adduser runner
 echo 'runner ALL=(ALL) NOPASSWD:ALL' > /etc/sudoers.d/10-runner
