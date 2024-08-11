@@ -18,8 +18,6 @@ pub(crate) fn create_user_data(
     let grafana_cloud_stack_name = env::var("GRAFANA_CLOUD_STACK_NAME").unwrap();
     let grafana_cloud_token = env::var("GRAFANA_CLOUD_TOKEN").unwrap();
 
-    let sudoers = BASE64_STANDARD.encode("runner ALL=(ALL) NOPASSWD:ALL");
-
     let aws_region = env::var("AWS_REGION").unwrap();
     let tag_script = BASE64_STANDARD.encode(format!("#!/bin/sh -e
 
@@ -53,7 +51,7 @@ mkswap $SWAP
 swapon $SWAP
 
 adduser runner
-echo '{sudoers}' | base64 -d > /etc/sudoers.d/10-runner
+echo 'runner ALL=(ALL) NOPASSWD:ALL' > /etc/sudoers.d/10-runner
 mkdir /home/runner/actions-runner
 chown runner:runner /home/runner/actions-runner
 
