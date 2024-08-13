@@ -20,4 +20,4 @@ jobs:
           name: github-actions-runner-aws
           authToken: '${{ secrets.CACHIX_AUTH_TOKEN }}'
 
-      - run: nix build
+      - run: nix build --cores 1 --max-jobs 4
