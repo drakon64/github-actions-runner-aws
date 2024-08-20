@@ -51,7 +51,7 @@ fi
 mkswap $SWAP || true
 swapon $SWAP || true
 
-adduser runner
+adduser --disabled-password --gecos \"\" runner
 echo 'runner ALL=(ALL) NOPASSWD:ALL' > /etc/sudoers.d/10-runner
 mkdir /home/runner/actions-runner
 chown runner:runner /home/runner/actions-runner
