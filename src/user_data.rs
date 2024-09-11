@@ -25,6 +25,8 @@ aws ec2 create-tags --region {aws_region} --resources \"$(curl -H \"X-aws-ec2-me
 
     BASE64_STANDARD.encode(format!("#!/bin/sh -e
 
+shutdown -P +360
+
 mkdir -p /etc/apt/keyrings/
 curl https://apt.grafana.com/gpg.key | gpg --dearmor > /etc/apt/keyrings/grafana.gpg
 echo 'deb [signed-by=/etc/apt/keyrings/grafana.gpg] https://apt.grafana.com stable main' > /etc/apt/sources.list.d/grafana.list

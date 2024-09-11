@@ -2,8 +2,8 @@ use crate::user_data::create_user_data;
 use crate::webhook::Webhook;
 use aws_sdk_ec2::types::{
     BlockDeviceMapping, EbsBlockDevice, InstanceInterruptionBehavior, InstanceMarketOptionsRequest,
-    InstanceType, LaunchTemplateSpecification, MarketType, ResourceType, SpotInstanceType,
-    SpotMarketOptions, Tag, TagSpecification, VolumeType,
+    InstanceType, LaunchTemplateSpecification, MarketType, ResourceType, ShutdownBehavior,
+    SpotInstanceType, SpotMarketOptions, Tag, TagSpecification, VolumeType,
 };
 use aws_sdk_ec2::{Client, Error};
 use std::env;
@@ -94,6 +94,7 @@ pub(crate) async fn run_instance(client: Client, webhook: Webhook) -> Result<Str
                 ))
                 .build(),
         ]))
+        .set_instance_initiated_shutdown_behavior(Some(ShutdownBehavior::Terminate))
         .set_instance_market_options(Some(
             InstanceMarketOptionsRequest::builder()
                 .set_market_type(market_type)

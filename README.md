@@ -18,7 +18,7 @@ tofu apply
 ```
 
 # Roadmap
-* Automatically terminate stale workflows/instances
+* Automatically terminate stale workflows
 * Cleanup code
 * Improve error handling
 * Remove repository owner hack
