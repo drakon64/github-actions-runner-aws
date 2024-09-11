@@ -68,32 +68,18 @@ pub(crate) async fn run_instance(client: Client, webhook: Webhook) -> Result<Str
         .instance_type(InstanceType::from_str(instance_type).unwrap())
         .max_count(1)
         .min_count(1)
-        .set_block_device_mappings(Some(vec![
-            BlockDeviceMapping::builder()
-                .set_device_name(Some("/dev/sda1".into()))
-                .set_ebs(Some(
-                    EbsBlockDevice::builder()
-                        .set_delete_on_termination(Some(true))
-                        .set_iops(Some(3000))
-                        .set_throughput(Some(128))
-                        .set_volume_size(Some(volume_size))
-                        .set_volume_type(Some(VolumeType::Gp3))
-                        .build(),
-                ))
-                .build(),
-            BlockDeviceMapping::builder()
-                .set_device_name(Some("/dev/sdb".into()))
-                .set_ebs(Some(
-                    EbsBlockDevice::builder()
-                        .set_delete_on_termination(Some(true))
-                        .set_iops(Some(3000))
-                        .set_throughput(Some(128))
-                        .set_volume_size(Some(swap_volume_size))
-                        .set_volume_type(Some(VolumeType::Gp3))
-                        .build(),
-                ))
-                .build(),
-        ]))
+        .set_block_device_mappings(Some(vec![BlockDeviceMapping::builder()
+            .set_device_name(Some("/dev/sda1".into()))
+            .set_ebs(Some(
+                EbsBlockDevice::builder()
+                    .set_delete_on_termination(Some(true))
+                    .set_iops(Some(3000))
+                    .set_throughput(Some(128))
+                    .set_volume_size(Some(volume_size))
+                    .set_volume_type(Some(VolumeType::Gp3))
+                    .build(),
+            ))
+            .build()]))
         .set_instance_initiated_shutdown_behavior(Some(ShutdownBehavior::Terminate))
         .set_instance_market_options(Some(
             InstanceMarketOptionsRequest::builder()

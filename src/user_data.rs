@@ -41,18 +41,6 @@ GRAFANA_CLOUD_TOKEN=\"{grafana_cloud_token}\"
 GITHUB_REPOSITORY=\"{repository_full_name}\"\" >> /etc/default/alloy
 systemctl restart alloy
 
-sysctl vm.swappiness=1
-
-if [ ! $(fdisk -l /dev/nvme1n1 | grep -q \"Disklabel type\") ] ; then
-    SWAP='/dev/nvme1n1'
-else
-    SWAP='/dev/nvme0n1'
-fi
-
-# TODO: Sometimes we cannot create a swap partition due to the disk being busy. Fix this.
-mkswap $SWAP || true
-swapon $SWAP || true
-
 adduser --disabled-password --gecos \"\" runner
 echo 'runner ALL=(ALL) NOPASSWD:ALL' > /etc/sudoers.d/10-runner
 mkdir /home/runner/actions-runner
