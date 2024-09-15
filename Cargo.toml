@@ -21,3 +21,7 @@ tokio = { version = "1", default-features = false, features = ["macros", "rt"] }
 [profile.release]
 codegen-units = 1
 lto = true
+
+[[bin]]
+name = "webhook"
+path = "src/webhook/main.rs"
